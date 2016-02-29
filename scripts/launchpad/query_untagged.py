@@ -9,20 +9,12 @@ import json
 import os
 import requests
 
-from launchpadlib.launchpad import Launchpad
-
+import common
 
 PROJECT_NAME = "nova"
 
-cachedir = os.path.expanduser("~/.launchpadlib/cache/")
-if not os.path.exists(cachedir):
-    os.makedirs(cachedir, 0700)
-launchpad = Launchpad.login_anonymously('nova-bugs',
-                                        'production', cachedir)
-
-project = launchpad.projects[PROJECT_NAME]
-
-bug_tasks = project.searchTasks(tags=["-*"],
+client = common.get_project_client(PROJECT_NAME)
+bug_tasks = client.searchTasks(tags=["-*"],
                                 status=["New"],
                                 order_by="datecreated",
                                 omit_duplicates=True)

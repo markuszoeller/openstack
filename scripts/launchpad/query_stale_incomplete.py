@@ -7,20 +7,14 @@
 
 import datetime
 import os
-from launchpadlib.launchpad import Launchpad
+
+import common
 
 PROJECT_NAME = "nova"
 DAYS_SINCE_INCOMPLETE = 30
 
-cachedir = os.path.expanduser("~/.launchpadlib/cache/")
-if not os.path.exists(cachedir):
-    os.makedirs(cachedir, 0700)
-launchpad = Launchpad.login_anonymously('nova-bugs',
-                                        'production', cachedir)
-
-project = launchpad.projects[PROJECT_NAME]
-
-bug_tasks = project.searchTasks(status=["Incomplete"],
+client = common.get_project_client(PROJECT_NAME)
+bug_tasks = client.searchTasks(status=["Incomplete"],
                                 omit_duplicates=True)
 
 print("potentially stale bugs:")
