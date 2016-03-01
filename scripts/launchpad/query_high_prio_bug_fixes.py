@@ -19,7 +19,7 @@ bug_tasks = client.searchTasks(tags=["*"],
                                 omit_duplicates=True)
 
 print("=================================================")
-print("High Prio Bugs ")
+print("High|Critical Prio Bugs ")
 print("=================================================")
 for bug_task in bug_tasks:
     print(bug_task.web_link)
