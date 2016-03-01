@@ -11,7 +11,7 @@ from launchpadlib.launchpad import Launchpad
 def get_project_client(project_name):
     cachedir = os.path.expanduser("~/.launchpadlib/cache/")
     if not os.path.exists(cachedir):
-        os.makedirs(cachedir, 0700)
+        os.makedirs(cachedir, 0o700)
     launchpad = Launchpad.login_anonymously(project_name + '-bugs',
                                             'production', cachedir)
     project = launchpad.projects[project_name]

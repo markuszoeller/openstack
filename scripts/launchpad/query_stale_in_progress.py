@@ -24,7 +24,6 @@ print("=======================")
 today = datetime.datetime.today()
 
 for bug_task in sorted(bug_tasks, key=lambda bug_task: bug_task.date_in_progress):
-    counter_all += 1
     # remove the timezone info as it disturbs the calculation of the diff
     diff = today - bug_task.date_in_progress.replace(tzinfo=None)
     if diff.days > DAYS_SINCE_IN_PROGRESS:
@@ -33,5 +32,4 @@ for bug_task in sorted(bug_tasks, key=lambda bug_task: bug_task.date_in_progress
         response = requests.get(review_url)
         reviews = json.loads(common.remove_first_line(response.text))
         if not reviews:
-            counter += 1
             print(bug_task.web_link + "  (" + str(diff.days) + " days since in progress)")
