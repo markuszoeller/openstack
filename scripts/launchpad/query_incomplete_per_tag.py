@@ -20,7 +20,7 @@ import common
 
 PROJECT_NAME = "nova"
 
-TAGS = ["*"] if len(sys.argv) <= 1 else sys.argv[1:]
+TAGS = None if len(sys.argv) <= 1 else sys.argv[1:]
 
 client = common.get_project_client(PROJECT_NAME)
 bug_tasks = client.searchTasks(status=["Incomplete"],

@@ -13,10 +13,10 @@ PROJECT_NAME = "nova"
 
 client = common.get_project_client(PROJECT_NAME)
 
-bug_tasks = client.searchTasks(tags=["*"],
-                                order_by='-datecreated',
-                                importance=["High", "Critical"],
-                                omit_duplicates=True)
+bug_tasks = client.searchTasks(tags=None,
+                               order_by='id',
+                               importance=["High", "Critical"],
+                               omit_duplicates=True)
 
 print("=================================================")
 print("High|Critical Prio Bugs ")
