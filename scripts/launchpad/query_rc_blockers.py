@@ -23,7 +23,7 @@ print("=================================================")
 print("Bugs (\"" + RELEASE + "-rc-potential\") ")
 print("=================================================")
 for bug_task in bug_tasks:
-    print(bug_task.web_link)
+    print(bug_task.web_link + " (" + bug_task.bug.title + ")")
 
 print "================================================="
 print "Reviews"
