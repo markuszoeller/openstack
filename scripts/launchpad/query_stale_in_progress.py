@@ -22,6 +22,7 @@ bug_tasks = client.searchTasks(status=["In Progress"],
 print("potentially stale bugs:")
 print("=======================")
 today = datetime.datetime.today()
+counter = 0
 
 for bug_task in sorted(bug_tasks, key=lambda bug_task: bug_task.date_in_progress):
     # remove the timezone info as it disturbs the calculation of the diff
@@ -33,3 +34,7 @@ for bug_task in sorted(bug_tasks, key=lambda bug_task: bug_task.date_in_progress
         reviews = json.loads(common.remove_first_line(response.text))
         if not reviews:
             print(bug_task.web_link + "  (" + str(diff.days) + " days since in progress)")
+            counter += 1
+
+print("---------------------------------")
+print("%s potentially stale bug reports" % counter)

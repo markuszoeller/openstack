@@ -15,13 +15,19 @@ DAYS_SINCE_INCOMPLETE = 30
 
 client = common.get_project_client(PROJECT_NAME)
 bug_tasks = client.searchTasks(status=["Incomplete"],
-                                omit_duplicates=True)
+                               omit_duplicates=True)
 
 print("potentially stale bugs:")
 print("=======================")
 today = datetime.datetime.today()
+counter = 0
+
 for bug_task in sorted(bug_tasks, key=lambda bug_task: bug_task.date_incomplete):
     # remove the timezone info as it disturbs the calculation of the diff
     diff = today - bug_task.date_incomplete.replace(tzinfo=None)
     if diff.days > DAYS_SINCE_INCOMPLETE:
         print(bug_task.web_link + "  (" + str(diff.days) + " days since incomplete)")
+        counter += 1
+
+print("---------------------------------")
+print("%s potentially stale bug reports" % counter)
