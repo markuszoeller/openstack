@@ -1,0 +1,274 @@
+#!/usr/bin/env/python
+#
+# Creates a HTML file which can be used as a dashboard for
+# cleanup tasks of the bug management.
+#
+
+import datetime
+import json
+import os
+import requests
+import logging
+
+from jinja2 import Environment, FileSystemLoader
+from launchpadlib.launchpad import Launchpad
+
+logging.basicConfig(level=logging.INFO)
+THIS_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_NAME = "nova"
+DAYS_SINCE_INCOMPLETE = 30
+DAYS_SINCE_IN_PROGRESS = 14
+DAYS_SINCE_RECENT = 10
+DAYS_OLD_WISHLIST = 365
+LP_OPEN_STATES = ["New", "Incomplete", "Confirmed", "Triaged", "In Progress"]
+
+LOG = logging.getLogger(__name__)
+logging.getLogger("requests").setLevel(logging.WARNING)
+logging.getLogger("urllib3").setLevel(logging.WARNING)
+
+
+class BugReport(object):
+
+    def __init__(self, link, title, age):
+        self.link = link
+        self.title = title.encode('ascii', 'replace')
+        self.age = age
+
+    def __str__(self):
+        data = {'link': self.link, 'title': self.title, 'age': self.age}
+        return "{link} ({title}) - ({age} days)".format(**data)
+
+    def __cmp__(self, other):
+        return cmp(self.age, other.age)
+
+
+def get_project_client():
+    cache_dir = os.path.expanduser("~/.launchpadlib/cache/")
+    if not os.path.exists(cache_dir):
+        os.makedirs(cache_dir, 0o700)
+    launchpad = Launchpad.login_anonymously(PROJECT_NAME + '-bugs',
+                                            'production', cache_dir)
+    project = launchpad.projects[PROJECT_NAME]
+    return project
+
+
+def get_recent_reports():
+    LOG.info("getting recent reports...")
+    lp_project = get_project_client()
+    bug_tasks = lp_project.searchTasks(status=LP_OPEN_STATES,
+                                       omit_duplicates=True,
+                                       order_by="-datecreated")
+    today = datetime.datetime.today()
+    recent_reports = []
+    for bug_task in bug_tasks:
+        # remove the timezone info as it disturbs the calculation of the diff
+        diff = today - bug_task.date_created.replace(tzinfo=None)
+        if diff.days <= DAYS_SINCE_RECENT:
+            recent_reports.append(BugReport(link=bug_task.web_link,
+                                            title=bug_task.bug.title,
+                                            age=diff.days))
+        else:
+            break
+    LOG.info("got recent reports")
+    return recent_reports
+
+
+def get_undecided():
+    LOG.info("getting undecided reports...")
+    lp_project = get_project_client()
+    bug_tasks = lp_project.searchTasks(status=["Confirmed", "Triaged"],
+                                       importance="Undecided",
+                                       omit_duplicates=True,
+                                       order_by="-datecreated")
+    today = datetime.datetime.today()
+    undecided = []
+    for bug_task in bug_tasks:
+        # remove the timezone info as it disturbs the calculation of the diff
+        diff = today - bug_task.date_created.replace(tzinfo=None)
+        undecided.append(BugReport(link=bug_task.web_link,
+                                   title=bug_task.bug.title,
+                                   age=diff.days))
+    LOG.info("got undecided reports")
+    return undecided
+
+
+def get_fix_committed():
+    LOG.info("getting fix committed reports...")
+    lp_project = get_project_client()
+    bug_tasks = lp_project.searchTasks(status=["Fix Committed"],
+                                       omit_duplicates=True)
+    today = datetime.datetime.today()
+    fix_committed = []
+    for bug_task in bug_tasks:
+        # remove the timezone info as it disturbs the calculation of the diff
+        diff = today - bug_task.date_fix_committed.replace(tzinfo=None)
+        fix_committed.append(BugReport(link=bug_task.web_link,
+                                       title=bug_task.bug.title,
+                                       age=diff.days))
+    LOG.info("got fix committed reports")
+    return fix_committed
+
+
+def get_stale_incomplete():
+    LOG.info("getting stale incomplete reports...")
+    lp_project = get_project_client()
+    bug_tasks = lp_project.searchTasks(status=["Incomplete"],
+                                       omit_duplicates=True)
+    today = datetime.datetime.today()
+    stale_bug_reports = []
+    for bug_task in bug_tasks:
+        # remove the timezone info as it disturbs the calculation of the diff
+        diff = today - bug_task.date_incomplete.replace(tzinfo=None)
+        if diff.days <= DAYS_SINCE_INCOMPLETE:
+            continue
+        stale_bug_reports.append(BugReport(link=bug_task.web_link,
+                                           title=bug_task.bug.title,
+                                           age=diff.days))
+    LOG.info("got stale incomplete reports")
+    return stale_bug_reports
+
+
+def get_patched_reports():
+    LOG.info("getting patched reports...")
+    lp_project = get_project_client()
+    bug_tasks = lp_project.searchTasks(status=["New", "Confirmed", "Triaged"],
+                                       has_patch=True,
+                                       omit_duplicates=True)
+    today = datetime.datetime.today()
+    patched_reports = []
+    for bug_task in bug_tasks:
+        # remove the timezone info as it disturbs the calculation of the diff
+        diff = today - bug_task.date_created.replace(tzinfo=None)
+        patched_reports.append(BugReport(link=bug_task.web_link,
+                                         title=bug_task.bug.title,
+                                         age=diff.days))
+    LOG.info("got patched reports")
+    return patched_reports
+
+
+def get_incomplete_response():
+    LOG.info("getting incomplete with response reports...")
+    lp_project = get_project_client()
+    bug_tasks = lp_project.searchTasks(status=["Incomplete (with response)"],
+                                       omit_duplicates=True)
+    today = datetime.datetime.today()
+    incomplete_response = []
+    for bug_task in bug_tasks:
+        # remove the timezone info as it disturbs the calculation of the diff
+        diff = today - bug_task.date_incomplete.replace(tzinfo=None)
+        incomplete_response.append(BugReport(link=bug_task.web_link,
+                                             title=bug_task.bug.title,
+                                             age=diff.days))
+    LOG.info("got incomplete with response reports")
+    return incomplete_response
+
+
+def get_inconsistent_reports():
+    LOG.info("getting inconsistent reports...")
+    inconsistent = []
+    today = datetime.datetime.today()
+    lp_project = get_project_client()
+
+    bug_tasks = lp_project.searchTasks(status=["In Progress"],
+                                       omit_duplicates=True)
+    for bug_task in bug_tasks:
+        if not bug_task.assignee:
+            # remove the timezone info as it disturbs the calculation of the diff
+            diff = today - bug_task.date_created.replace(tzinfo=None)
+            inconsistent.append(BugReport(link=bug_task.web_link,
+                                          title=bug_task.bug.title,
+                                          age=diff.days))
+
+    bug_tasks = lp_project.searchTasks(status=["New", "Confirmed", "Triaged"],
+                                       omit_duplicates=True)
+    for bug_task in bug_tasks:
+        if bug_task.assignee:
+            # remove the timezone info as it disturbs the calculation of the diff
+            diff = today - bug_task.date_created.replace(tzinfo=None)
+            inconsistent.append(BugReport(link=bug_task.web_link,
+                                          title=bug_task.bug.title,
+                                          age=diff.days))
+    LOG.info("got inconsistent reports")
+    return inconsistent
+
+
+def get_old_wishlist():
+    LOG.info("getting old wishlist reports...")
+    lp_project = get_project_client()
+    bug_tasks = lp_project.searchTasks(status=["New", "Confirmed", "Triaged"],
+                                       importance="Wishlist",
+                                       omit_duplicates=True)
+    today = datetime.datetime.today()
+    old_wishlist = []
+    for bug_task in bug_tasks:
+        # remove the timezone info as it disturbs the calculation of the diff
+        diff = today - bug_task.date_created.replace(tzinfo=None)
+        if diff.days > DAYS_OLD_WISHLIST:
+            old_wishlist.append(BugReport(link=bug_task.web_link,
+                                          title=bug_task.bug.title,
+                                          age=diff.days))
+    LOG.info("got old wishlist reports")
+    return old_wishlist
+
+
+def get_stale_in_progress():
+    LOG.info("getting stale in progress reports...")
+    lp_project = get_project_client()
+    bug_tasks = lp_project.searchTasks(status=["In Progress"],
+                                       omit_duplicates=True)
+    today = datetime.datetime.today()
+    stale_bug_reports = []
+    for bug_task in bug_tasks:
+        # remove the timezone info as it disturbs the calculation of the diff
+        diff = today - bug_task.date_in_progress.replace(tzinfo=None)
+        if diff.days <= DAYS_SINCE_IN_PROGRESS:
+            continue
+        if bug_has_open_changes(bug_task.bug.id):
+            continue
+        stale_bug_reports.append(BugReport(link=bug_task.web_link,
+                                           title=bug_task.bug.title,
+                                           age=diff.days))
+    LOG.info("got stale in progress reports")
+    return stale_bug_reports
+
+
+def bug_has_open_changes(bug_id):
+    gerrit_url = "https://review.openstack.org/"
+    review_url = gerrit_url + "/changes/?q=status:open+message:"+str(bug_id)
+    response = requests.get(review_url)
+    reviews = json.loads(remove_first_line(response.text))
+    return reviews
+
+
+def remove_first_line(invalid_json):
+    return '\n'.join(invalid_json.split('\n')[1:])
+
+
+def create_html_dashboard():
+    LOG.info("creating html dashboard...")
+    j2_env = Environment(loader=FileSystemLoader(THIS_DIR),
+                         trim_blocks=True,
+                         autoescape=True)
+    d = datetime.datetime.strftime(datetime.datetime.now(), '%Y-%m-%d %H:%M:%S')
+    template = "bugs_dashboard_template.html"
+    rendered_html = j2_env.get_template(template).render(
+        last_update=d,
+        stale_incomplete=sorted(get_stale_incomplete(), reverse=True),
+        stale_in_progress=sorted(get_stale_in_progress(), reverse=True),
+        dummy_list=[BugReport("http://WWW.google.de", "dummy", -1)],
+        recent_reports=sorted(get_recent_reports(), reverse=True),
+        undecided_reports=sorted(get_undecided(), reverse=True),
+        fix_committed=sorted(get_fix_committed()),
+        incomplete_response=sorted(get_incomplete_response()),
+        patched_reports=sorted(get_patched_reports(), reverse=True),
+        old_wishlist=sorted(get_old_wishlist(), reverse=True),
+        inconsistent_reports=get_inconsistent_reports()
+    )
+    with open("bugs-dashboard.html", "wb") as fh:
+        fh.write(rendered_html)
+    LOG.info("created html dashboard")
+
+if __name__ == '__main__':
+    LOG.info("starting script...")
+    create_html_dashboard()
+    LOG.info("end script")
