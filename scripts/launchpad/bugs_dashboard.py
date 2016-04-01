@@ -255,14 +255,13 @@ def create_html_dashboard():
         last_update=d,
         stale_incomplete=sorted(get_stale_incomplete(), reverse=True),
         stale_in_progress=sorted(get_stale_in_progress(), reverse=True),
-        dummy_list=[BugReport("http://WWW.google.de", "dummy", -1)],
         recent_reports=sorted(get_recent_reports(), reverse=True),
         undecided_reports=sorted(get_undecided(), reverse=True),
-        fix_committed=sorted(get_fix_committed()),
-        incomplete_response=sorted(get_incomplete_response()),
+        fix_committed=sorted(get_fix_committed(), reverse=True),
+        incomplete_response=sorted(get_incomplete_response(), reverse=True),
         patched_reports=sorted(get_patched_reports(), reverse=True),
         old_wishlist=sorted(get_old_wishlist(), reverse=True),
-        inconsistent_reports=get_inconsistent_reports()
+        inconsistent_reports=sorted(get_inconsistent_reports(), reverse=True)
     )
     with open("bugs-dashboard.html", "wb") as fh:
         fh.write(rendered_html)
