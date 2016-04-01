@@ -13,7 +13,8 @@ import logging
 from jinja2 import Environment, FileSystemLoader
 from launchpadlib.launchpad import Launchpad
 
-logging.basicConfig(level=logging.INFO)
+LOG_FORMAT="%(asctime)s - %(levelname)s - %(funcName)s - %(message)s"
+logging.basicConfig(level=logging.INFO, format=LOG_FORMAT)
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_NAME = "nova"
 DAYS_SINCE_INCOMPLETE = 30
@@ -246,10 +247,10 @@ def remove_first_line(invalid_json):
 
 def create_html_dashboard():
     LOG.info("creating html dashboard...")
+    d = datetime.datetime.strftime(datetime.datetime.now(), '%Y-%m-%d %H:%M:%S')
     j2_env = Environment(loader=FileSystemLoader(THIS_DIR),
                          trim_blocks=True,
                          autoescape=True)
-    d = datetime.datetime.strftime(datetime.datetime.now(), '%Y-%m-%d %H:%M:%S')
     template = "bugs_dashboard_template.html"
     rendered_html = j2_env.get_template(template).render(
         last_update=d,
