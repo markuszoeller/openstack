@@ -1,0 +1,1 @@
+Setups for the x86 architecture, Ubuntu hosts, version 14.04.

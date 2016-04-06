@@ -1,0 +1,1 @@
+Setups which are valid for the *Newton* release.
