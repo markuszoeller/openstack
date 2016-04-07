@@ -8,6 +8,8 @@
 import os
 from launchpadlib.launchpad import Launchpad
 
+print("DEPRECATED: Please use '../launchpad/query_rc_blockers.py' instead.")
+print("DEPRECATED: This file will be deleted after August 2016.")
 
 cachedir = os.path.expanduser("~/.launchpadlib/cache/")
 if not os.path.exists(cachedir):
