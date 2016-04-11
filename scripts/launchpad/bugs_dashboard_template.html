@@ -56,6 +56,7 @@ Author: Markus Zoeller (markus_z)
         <li><a href="#tabInProgressStale">Stale In Progress</a></li>
         <li><a href="#tabPatch">Patch</a></li>
         <li><a href="#tabWishlist">Old Wishlist</a></li>
+        <li><a href="#tabExpired">Expired</a></li>
         <li><a href="#tabCelebrate">Celebrate</a></li>
     </ul>
     <div id="tabRecent">
@@ -174,10 +175,29 @@ Author: Markus Zoeller (markus_z)
         </ol>
     </div>
     <div id="tabWishlist">
-        <p>Task9: The list below shows the old wishlist bugs
+        <p>Task9: The list below shows old wishlist bug reports
         </p>
         <ol>
             {% for b in old_wishlist %}
+            <li class="{{ loop.cycle('odd', 'even') }}">
+                <a href="{{ b.link }}" target="_blank">{{ b.link }}</a>
+                {{ b.title }}
+                ({{ b.age }} days old)
+            </li>
+            {% endfor %}
+        </ol>
+    </div>
+    <div id="tabExpired">
+        <p>The list below shows bug reports which got reported 18 months ago
+           and are therefore potentially expired. To remove a still valid bug
+           report from this list you can leave a comment like
+           <code>CONFIRMED FOR: RELEASE_NAME</code> (all caps) in that bug
+           report. For example for Newton this would be
+           <code>CONFIRMED FOR: NEWTON</code>.
+           This works also for the last stable releases.
+        </p>
+        <ol>
+            {% for b in expired_reports %}
             <li class="{{ loop.cycle('odd', 'even') }}">
                 <a href="{{ b.link }}" target="_blank">{{ b.link }}</a>
                 {{ b.title }}

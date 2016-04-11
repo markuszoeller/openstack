@@ -23,6 +23,11 @@ DAYS_SINCE_RECENT = 10
 DAYS_OLD_WISHLIST = 365
 LP_OPEN_STATES = ["New", "Incomplete", "Confirmed", "Triaged", "In Progress"]
 
+DAYS_SINCE_CREATED = 30 * 18  # 18 months
+STILL_VALID_FLAG = "CONFIRMED FOR: %(release_name)s"  # UPPER CASE
+
+SUPPORTED_RELEASE_NAMES = []
+
 LOG = logging.getLogger(__name__)
 logging.getLogger("requests").setLevel(logging.WARNING)
 logging.getLogger("urllib3").setLevel(logging.WARNING)
@@ -51,6 +56,18 @@ def get_project_client():
                                             'production', cache_dir)
     project = launchpad.projects[PROJECT_NAME]
     return project
+
+
+def fill_supported_release_names():
+    LOG.info("filling supported release names...")
+    lp_project = get_project_client()
+    # master name
+    SUPPORTED_RELEASE_NAMES.append(lp_project.development_focus.name)
+    for s in lp_project.series:
+        if s.active:
+            # stable branch names
+            SUPPORTED_RELEASE_NAMES.append(s.name)
+    LOG.info("filled supported release names: %s", SUPPORTED_RELEASE_NAMES)
 
 
 def get_recent_reports():
@@ -212,6 +229,38 @@ def get_old_wishlist():
     return old_wishlist
 
 
+def get_expired_reports():
+    LOG.info("getting potentially expired reports...")
+    lp_project = get_project_client()
+    bug_tasks = lp_project.searchTasks(status=["New", "Confirmed", "Triaged"],
+                                       omit_duplicates=True,
+                                       order_by="datecreated")
+    today = datetime.datetime.today()
+    expired = []
+    
+    def bug_is_still_valid(bug):
+        for message in bug.messages:
+            for release_name in SUPPORTED_RELEASE_NAMES:
+                flag = STILL_VALID_FLAG % \
+                        {'release_name': release_name.upper()}
+                if flag in message.content:
+                    return True
+        return False
+    
+    for bug_task in bug_tasks:
+        # remove the timezone info as it disturbs the calculation of the diff
+        diff = today - bug_task.date_created.replace(tzinfo=None)
+        if diff.days < DAYS_SINCE_CREATED:
+            break
+        if bug_is_still_valid(bug_task.bug):
+            continue
+        expired.append(BugReport(link=bug_task.web_link,
+                                 title=bug_task.bug.title,
+                                 age=diff.days))
+    LOG.info("got potentially expired reports.")
+    return expired
+
+
 def get_stale_in_progress():
     LOG.info("getting stale in progress reports...")
     lp_project = get_project_client()
@@ -247,6 +296,7 @@ def remove_first_line(invalid_json):
 
 def create_html_dashboard():
     LOG.info("creating html dashboard...")
+    fill_supported_release_names()
     d = datetime.datetime.strftime(datetime.datetime.now(), '%Y-%m-%d %H:%M:%S')
     j2_env = Environment(loader=FileSystemLoader(THIS_DIR),
                          trim_blocks=True,
@@ -262,7 +312,8 @@ def create_html_dashboard():
         incomplete_response=sorted(get_incomplete_response(), reverse=True),
         patched_reports=sorted(get_patched_reports(), reverse=True),
         old_wishlist=sorted(get_old_wishlist(), reverse=True),
-        inconsistent_reports=sorted(get_inconsistent_reports(), reverse=True)
+        inconsistent_reports=sorted(get_inconsistent_reports(), reverse=True),
+        expired_reports=sorted(get_expired_reports(), reverse=True)
     )
     with open("bugs-dashboard.html", "wb") as fh:
         fh.write(rendered_html)
