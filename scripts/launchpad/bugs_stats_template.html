@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Bugs Statistics Dashboard</title>
+    <script src="http://code.jquery.com/jquery-1.10.2.js"></script>
+    <script src="http://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+    <script type="text/javascript" src="jquery.tablesorter.min.js"></script> 
+    <link rel="stylesheet"
+          href="http://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+    <link rel="stylesheet" href="blue_theme/style.css">
+    <script>
+        $(function() {
+            $("#tabs").tabs();
+            $("#recent_table").tablesorter(); 
+        });
+    </script>
+    <style type="text/css">
+        .even {
+        background-color: #FFFACD;
+        }
+        .odd {
+        background-color: #E0FFFF;
+        }
+        /* Tooltip container */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            border-bottom: 1px dotted black; /* If you want dots under the hoverable text */
+        }
+
+        /* Tooltip text */
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            background-color: white;
+            color: #fff;
+            text-align: left;
+            padding: 5px 0;
+            border-radius: 6px;
+            width: 420px;
+            top: 100%;
+            left: 50%;
+            margin-left: -210px;
+         
+            /* Position the tooltip text - see examples below! */
+            position: absolute;
+            z-index: 1;
+        }
+
+        /* Show the tooltip text when you mouse over the tooltip container */
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Bugs Statistics Dashboard</h1>
+
+<p>
+This dashboard shows statistics about the Nova bug list.</a>
+</p>
+
+<p>
+Code and issues at 
+<a href="https://github.com/markuszoeller/openstack/blob/master/scripts/launchpad/bugs_stats.py">
+github</a>
+</p>
+
+<p>
+This gets updated every 4 hours. Last update: {{ last_update }}
+</p>
+
+
+<div id="tabs">
+    <ul>
+        <li><a href="#tabRecent">Recent</a></li>
+        <li><a href="#tabAge">Age</a></li>
+    </ul>
+    <div id="tabRecent">
+        <p>This list shows the bug triage actions of the last
+           <code>{{ recent_days }}</code> days.
+        </p>
+        <table id="recent_table" class="tablesorter" style="width:100%">
+        <thead>
+            <tr>
+                <th>Person</th>
+                <th title="Number of created bug reports">created</th>
+                <th title="Number of new confirmed bug reports">confirmed</th>
+                <th title="Number of switches to 'incomplete' + found duplicates">inquired</th>
+                <th title="Number of switches to 'invalid', 'won't fix', 'opinion'" >rejected</th>
+                <th title="Number of switches to 'fix released'">resolved</th>
+                <th>sum</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for s in recent_actions %}
+            <tr>
+                <td>
+                <a href="{{ s.person_url }}">{{ s.person_name }}</a>
+                </td>
+                <td>
+                    {% if s.created > 0 %}
+                        <div class="tooltip">{{ s.created }}
+                            <span class="tooltiptext">
+                            {% for r in s.created_reports %}
+                                <a href="{{ r }}">{{ r }}</a><br/>
+                            {% endfor %}
+                            </span>
+                        </div>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if s.confirmed > 0 %}
+                        <div class="tooltip">{{ s.confirmed }}
+                            <span class="tooltiptext">
+                            {% for r in s.confirmed_reports %}
+                                <a href="{{ r }}">{{ r }}</a><br/>
+                            {% endfor %}
+                            </span>
+                        </div>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if s.inquired > 0 %}
+                        <div class="tooltip">{{ s.inquired }}
+                            <span class="tooltiptext">
+                            {% for r in s.inquired_reports %}
+                                <a href="{{ r }}">{{ r }}</a><br/>
+                            {% endfor %}
+                            </span>
+                        </div>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if s.rejected > 0 %}
+                        <div class="tooltip">{{ s.rejected }}
+                            <span class="tooltiptext">
+                            {% for r in s.rejected_reports %}
+                               <a href="{{ r }}">{{ r }}</a><br/>
+                            {% endfor %}
+                            </span>
+                        </div>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if s.resolved > 0 %}
+                        <div class="tooltip">{{ s.resolved }}
+                            <span class="tooltiptext">
+                            {% for r in s.resolved_reports %}
+                                <a href="{{ r }}">{{ r }}</a><br/>
+                            {% endfor %}
+                            </span>
+                        </div>
+                    {% endif %}
+                </td>
+                <td>
+                    {{ s.sum }}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        </table>
+    </div>
+    <div id="tabAge">
+        <p>The age distribution
+        </p>
+        TODO
+    </div>
+</div>
+
+</body>
+</html>
