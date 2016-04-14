@@ -51,29 +51,12 @@ class StatSummary(object):
             (self.person_name, self.created, self.confirmed, self.rejected, self.resolved, self.inquired, self.sum)
 
     @property
-    def created(self):
-        return len(self.created_reports)
-
-    @property
-    def confirmed(self):
-        return len(self.confirmed_reports)
-
-    @property
-    def rejected(self):
-        return len(self.rejected_reports)
-
-    @property
-    def resolved(self):
-        return len(self.resolved_reports)
-
-    @property
-    def inquired(self):
-        return len(self.inquired_reports)
-
-    @property
     def sum(self):
-        return self.created + self.confirmed + self.rejected + \
-            self.resolved + self.inquired
+        return len(self.created_reports) + \
+               len(self.confirmed_reports) + \
+               len(self.rejected_reports) + \
+               len(self.resolved_reports) + \
+               len(self.inquired_reports)
 
 def get_project_client():
     cache_dir = os.path.expanduser("~/.launchpadlib/cache/")
@@ -122,8 +105,9 @@ def get_recent_actions():
     def is_rejected(a):
         return a.newvalue in ["Invalid", "Opinion", "Won't Fix"]
     
-    def is_new_confirmed(a):
-        return a.newvalue == 'Confirmed' and a.oldvalue == "New"
+    def is_new_confirmed(a, bug_task):
+        return a.newvalue == 'Confirmed' and a.oldvalue == "New" and \
+            a.person != bug_task.owner
     
     def is_trackable_status_change(a):
         return a.whatchanged == "nova: status" and \
@@ -152,7 +136,7 @@ def get_recent_actions():
             elif is_trackable_status_change(a):
                 if is_rejected(a):
                     get_summary(person).rejected_reports.append(web_link)
-                elif is_new_confirmed(a):
+                elif is_new_confirmed(a, bug_task):
                     get_summary(person).confirmed_reports.append(web_link)
                 elif a.newvalue == 'Fix Released':
                     if is_infra(person):

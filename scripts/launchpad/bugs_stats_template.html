@@ -68,7 +68,7 @@ github</a>
 </p>
 
 <p>
-This gets updated every 4 hours. Last update: {{ last_update }}
+Last update: {{ last_update }}
 </p>
 
 
@@ -81,12 +81,25 @@ This gets updated every 4 hours. Last update: {{ last_update }}
         <p>This list shows the bug triage actions of the last
            <code>{{ recent_days }}</code> days.
         </p>
+        {% macro reports_cell(reports) -%}
+                 <td>
+                    {% if reports|length > 0 %}
+                        <div class="tooltip">{{ reports|length }}
+                            <span class="tooltiptext">
+                            {% for r in reports %}
+                                <a href="{{ r }}">{{ r }}</a><br/>
+                            {% endfor %}
+                            </span>
+                        </div>
+                    {% endif %}
+                </td>
+        {%- endmacro %}
         <table id="recent_table" class="tablesorter" style="width:100%">
         <thead>
             <tr>
                 <th>Person</th>
                 <th title="Number of created bug reports">created</th>
-                <th title="Number of new confirmed bug reports">confirmed</th>
+                <th title="Number of new confirmed bug reports (from others)">confirmed</th>
                 <th title="Number of switches to 'incomplete' + found duplicates">inquired</th>
                 <th title="Number of switches to 'invalid', 'won't fix', 'opinion'" >rejected</th>
                 <th title="Number of switches to 'fix released'">resolved</th>
@@ -99,61 +112,11 @@ This gets updated every 4 hours. Last update: {{ last_update }}
                 <td>
                 <a href="{{ s.person_url }}">{{ s.person_name }}</a>
                 </td>
-                <td>
-                    {% if s.created > 0 %}
-                        <div class="tooltip">{{ s.created }}
-                            <span class="tooltiptext">
-                            {% for r in s.created_reports %}
-                                <a href="{{ r }}">{{ r }}</a><br/>
-                            {% endfor %}
-                            </span>
-                        </div>
-                    {% endif %}
-                </td>
-                <td>
-                    {% if s.confirmed > 0 %}
-                        <div class="tooltip">{{ s.confirmed }}
-                            <span class="tooltiptext">
-                            {% for r in s.confirmed_reports %}
-                                <a href="{{ r }}">{{ r }}</a><br/>
-                            {% endfor %}
-                            </span>
-                        </div>
-                    {% endif %}
-                </td>
-                <td>
-                    {% if s.inquired > 0 %}
-                        <div class="tooltip">{{ s.inquired }}
-                            <span class="tooltiptext">
-                            {% for r in s.inquired_reports %}
-                                <a href="{{ r }}">{{ r }}</a><br/>
-                            {% endfor %}
-                            </span>
-                        </div>
-                    {% endif %}
-                </td>
-                <td>
-                    {% if s.rejected > 0 %}
-                        <div class="tooltip">{{ s.rejected }}
-                            <span class="tooltiptext">
-                            {% for r in s.rejected_reports %}
-                               <a href="{{ r }}">{{ r }}</a><br/>
-                            {% endfor %}
-                            </span>
-                        </div>
-                    {% endif %}
-                </td>
-                <td>
-                    {% if s.resolved > 0 %}
-                        <div class="tooltip">{{ s.resolved }}
-                            <span class="tooltiptext">
-                            {% for r in s.resolved_reports %}
-                                <a href="{{ r }}">{{ r }}</a><br/>
-                            {% endfor %}
-                            </span>
-                        </div>
-                    {% endif %}
-                </td>
+                {{ reports_cell(s.created_reports) }}
+                {{ reports_cell(s.confirmed_reports) }}
+                {{ reports_cell(s.inquired_reports) }}
+                {{ reports_cell(s.rejected_reports) }}
+                {{ reports_cell(s.resolved_reports) }}
                 <td>
                     {{ s.sum }}
                 </td>
