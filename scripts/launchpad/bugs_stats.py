@@ -47,16 +47,27 @@ class StatSummary(object):
         return cmp(self.person_name, other.person_name)
 
     def __repr__(self):
-        return "<StatSummary: person=%s, created=%d, confirmed=%d, rejected=%d, resolved=%d, inquired=%d, sum=%d>" % \
-            (self.person_name, self.created, self.confirmed, self.rejected, self.resolved, self.inquired, self.sum)
+        return "<StatSummary: person=%(person)s, created=%(created)d, " \
+               "confirmed=%(confirmed)d, rejected=%(rejected)d, " \
+               "resolved=%(resolved)d, inquired=%(inquired)d, " \
+               "sum=%(sum)d>" % \
+                {
+                    'person': self.person_name,
+                    'created': len(self.created_reports),
+                    'confirmed': len(self.confirmed_reports),
+                    'rejected': len(self.rejected_reports),
+                    'resolved': len(self.resolved_reports),
+                    'inquired': len(self.inquired_reports),
+                    'sum': self.sum
+                }
 
     @property
     def sum(self):
-        return len(self.created_reports) + \
+        return int(len(self.created_reports) + \
                len(self.confirmed_reports) + \
                len(self.rejected_reports) + \
                len(self.resolved_reports) + \
-               len(self.inquired_reports)
+               len(self.inquired_reports))
 
 def get_project_client():
     cache_dir = os.path.expanduser("~/.launchpadlib/cache/")
@@ -111,7 +122,8 @@ def get_recent_actions():
     
     def is_trackable_status_change(a):
         return a.whatchanged == "nova: status" and \
-               a.newvalue in ["Incomplete", "Confirmed", "Won't Fix", "Opinion", "Invalid", "Fix Released"]
+               a.newvalue in ["Incomplete", "Confirmed", "Won't Fix",
+                              "Opinion", "Invalid", "Fix Released"]
     
     def is_infra(person):
         return person.web_link.encode('ascii', 'replace') == \
@@ -153,6 +165,11 @@ def get_recent_actions():
 def create_html_dashboard():
     LOG.info("creating html dashboard...")
     d = datetime.datetime.strftime(datetime.datetime.now(), '%Y-%m-%d %H:%M:%S')
+    
+    recent_actions = get_recent_actions()
+    for r in recent_actions:
+        LOG.info(r)
+    
     j2_env = Environment(loader=FileSystemLoader(THIS_DIR),
                          trim_blocks=True,
                          autoescape=True)
@@ -160,7 +177,7 @@ def create_html_dashboard():
     rendered_html = j2_env.get_template(template).render(
         last_update=d,
         recent_days=RECENT_ACTIVITY_IN_DAYS,
-        recent_actions=sorted(get_recent_actions()),
+        recent_actions=sorted(recent_actions),
     )
     with open("bugs-stats.html", "wb") as fh:
         fh.write(rendered_html)
