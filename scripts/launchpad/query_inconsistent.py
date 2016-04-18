@@ -16,7 +16,6 @@ import common
 PROJECT_NAME = "nova"
 LOG = logging.getLogger(__name__)
 
-client = common.get_project_client(PROJECT_NAME)
 
 def get_inconsistent_reports():
     LOG.info("getting inconsistent reports...")
@@ -45,6 +44,7 @@ def get_inconsistent_reports():
                                                  age=diff.days))
     LOG.info("got inconsistent reports")
     return inconsistent
+
 
 def main():
     print("Inconsistent bug reports:")
