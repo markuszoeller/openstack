@@ -47,7 +47,7 @@ def get_inconsistent_reports():
     return inconsistent
 
 def main():
-    print("Incomplete bug reports:")
+    print("Inconsistent bug reports:")
     print("=======================")
     inconsistent_reports = get_inconsistent_reports()
     for r in sorted(inconsistent_reports, reverse=True):
