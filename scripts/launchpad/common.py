@@ -19,3 +19,17 @@ def get_project_client(project_name):
 
 def remove_first_line(invalid_json):
     return '\n'.join(invalid_json.split('\n')[1:])
+
+class BugReport(object):
+
+    def __init__(self, link, title, age):
+        self.link = link
+        self.title = title.encode('ascii', 'replace')
+        self.age = age
+
+    def __str__(self):
+        data = {'link': self.link, 'title': self.title, 'age': self.age}
+        return "{link} ({title}) - ({age} days)".format(**data)
+
+    def __cmp__(self, other):
+        return cmp(self.age, other.age)
