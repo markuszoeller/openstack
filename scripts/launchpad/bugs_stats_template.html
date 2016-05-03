@@ -98,7 +98,6 @@ Last update: {{ last_update }}
         <thead>
             <tr>
                 <th>Person</th>
-                <th title="Number of created bug reports">created</th>
                 <th title="Number of new confirmed bug reports (from others)">confirmed</th>
                 <th title="Number of switches to 'incomplete' + found duplicates">inquired</th>
                 <th title="Number of switches to 'invalid', 'won't fix', 'opinion'" >rejected</th>
@@ -112,7 +111,6 @@ Last update: {{ last_update }}
                 <td>
                 <a href="{{ s.person_url }}">{{ s.person_name }}</a>
                 </td>
-                {{ reports_cell(s.created_reports) }}
                 {{ reports_cell(s.confirmed_reports) }}
                 {{ reports_cell(s.inquired_reports) }}
                 {{ reports_cell(s.rejected_reports) }}

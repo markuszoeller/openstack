@@ -20,7 +20,7 @@ logging.basicConfig(level=logging.INFO, format=LOG_FORMAT)
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_NAME = "nova"
 
-ALL_STATES = ["New", "Incomplete", "Confirmed", "Won't Fix", "Opinion",
+ALL_STATES = ["Incomplete", "Confirmed", "Won't Fix", "Opinion",
               "Invalid", "Fix Released"]
 
 LOG = logging.getLogger(__name__)
@@ -33,7 +33,6 @@ class StatSummary(object):
     def __init__(self, person_url, person_name):
         self.person_url = person_url.encode('ascii', 'replace')
         self.person_name = person_name.encode('ascii', 'replace')
-        self.created_reports = []
         self.confirmed_reports = []
         self.rejected_reports = []
         self.resolved_reports = []
@@ -47,13 +46,12 @@ class StatSummary(object):
         return cmp(self.person_name, other.person_name)
 
     def __repr__(self):
-        return "<StatSummary: person=%(person)s, created=%(created)d, " \
+        return "<StatSummary: person=%(person)s, " \
                "confirmed=%(confirmed)d, rejected=%(rejected)d, " \
                "resolved=%(resolved)d, inquired=%(inquired)d, " \
                "sum=%(sum)d>" % \
                 {
                     'person': self.person_name,
-                    'created': len(self.created_reports),
                     'confirmed': len(self.confirmed_reports),
                     'rejected': len(self.rejected_reports),
                     'resolved': len(self.resolved_reports),
@@ -63,8 +61,7 @@ class StatSummary(object):
 
     @property
     def sum(self):
-        return int(len(self.created_reports) + \
-               len(self.confirmed_reports) + \
+        return int(len(self.confirmed_reports) + \
                len(self.rejected_reports) + \
                len(self.resolved_reports) + \
                len(self.inquired_reports))
@@ -108,11 +105,6 @@ def get_recent_actions():
             stats[link] = StatSummary(link, name)
         return stats[link]
     
-    def is_created(bug_task, a):
-        return (a.whatchanged =="bug" and a.message == "added bug" and \
-                bug_task.date_created == bug_task.bug.date_created) or \
-                a.whatchanged == "bug task added" and a.newvalue == "nova"
-    
     def is_rejected(a):
         return a.newvalue in ["Invalid", "Opinion", "Won't Fix"]
     
@@ -143,9 +135,7 @@ def get_recent_actions():
             person = a.person
             web_link = bug_task.web_link.encode('ascii', 'replace')
 
-            if is_created(bug_task, a):
-                get_summary(person).created_reports.append(web_link)
-            elif is_trackable_status_change(a):
+            if is_trackable_status_change(a):
                 if is_rejected(a):
                     get_summary(person).rejected_reports.append(web_link)
                 elif is_new_confirmed(a, bug_task):
