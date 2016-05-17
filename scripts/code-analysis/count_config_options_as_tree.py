@@ -46,8 +46,9 @@ for root, dirs, files in os.walk("nova"):
             matches = re.findall(OPTS_REGEX, content)
             count_opts += len(matches)
 
-    print (len(path) - 1) * '---', name, "[" + str(count_opts) + "]"
-    ALL_OPTS_COUNTER += count_opts
+    if count_opts > 0:
+        print (len(path) - 1) * '---', name, "[" + str(count_opts) + "]"
+        ALL_OPTS_COUNTER += count_opts
 
 print("----------------------------")
 print("Number of total options: " + str(ALL_OPTS_COUNTER))
