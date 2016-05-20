@@ -70,19 +70,9 @@ def get_project_client():
     cache_dir = os.path.expanduser("~/.launchpadlib/cache/")
     if not os.path.exists(cache_dir):
         os.makedirs(cache_dir, 0o700)
-    # see "Authenticated access for website integration" 
-    # at https://help.launchpad.net/API/launchpadlib 
-    # from launchpadlib.credentials import Credentials
-    # credentials = Credentials("my website")
-    # request_token_info = credentials.get_request_token(web_root="production")
-
-    # NOTE(markus_z): We have to use "login_with" to get the bug activities.
-    #                 An anonymous login will give us an empty result.
-    #                 That's a bug from Launchpad. See bug:
-    #                 https://bugs.launchpad.net/launchpad/+bug/1569225
-    launchpad = Launchpad.login_with(PROJECT_NAME + '-bugs',
-                                     'production',
-                                     cache_dir)
+    launchpad = Launchpad.login_anonymously(PROJECT_NAME + '-bugs-stats',
+                                            'production',
+                                            cache_dir)
     project = launchpad.projects[PROJECT_NAME]
     return project
 
