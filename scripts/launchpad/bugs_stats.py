@@ -61,10 +61,11 @@ class StatSummary(object):
 
     @property
     def sum(self):
-        return int(len(self.confirmed_reports) + \
-               len(self.rejected_reports) + \
-               len(self.resolved_reports) + \
-               len(self.inquired_reports))
+        return int(len(self.confirmed_reports) +
+                   len(self.rejected_reports) +
+                   len(self.resolved_reports) +
+                   len(self.inquired_reports))
+
 
 def get_project_client():
     cache_dir = os.path.expanduser("~/.launchpadlib/cache/")
@@ -75,6 +76,7 @@ def get_project_client():
                                             cache_dir)
     project = launchpad.projects[PROJECT_NAME]
     return project
+
 
 def get_recent_actions():
     LOG.info("querying recent bug triage actions ...")
@@ -91,7 +93,7 @@ def get_recent_actions():
         if person:
             link = person.web_link.encode('ascii', 'replace')
             name = person.display_name.encode('ascii', 'replace')
-        if not link in stats.keys():
+        if link not in stats.keys():
             stats[link] = StatSummary(link, name)
         return stats[link]
     
