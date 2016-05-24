@@ -10,6 +10,7 @@ import argparse
 import datetime
 import logging
 import os
+import sys
 import time
 
 from launchpadlib.launchpad import Launchpad
@@ -63,9 +64,17 @@ def get_project_client():
     cache_dir = os.path.expanduser("~/.launchpadlib/cache/")
     if not os.path.exists(cache_dir):
         os.makedirs(cache_dir, 0o700)
-    # TODO(markus_z) login with credentials
-    launchpad = Launchpad.login_anonymously(PROJECT_NAME + '-bugs',
-                                            'production', cache_dir)
+
+    def no_credential():
+        LOG.error("Can't proceed without Launchpad credential.")
+        sys.exit()
+
+    # NOTE(markus_z): possibly you have to install "keyrings.alt":
+    # sudo pip install keyrings.alt
+    launchpad = Launchpad.login_with(PROJECT_NAME + '-bugs',
+                                     'production',
+                                     cache_dir,
+                                     credential_save_failed=no_credential)
     project = launchpad.projects[PROJECT_NAME]
     return project
 
