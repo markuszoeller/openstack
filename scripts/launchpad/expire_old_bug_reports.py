@@ -6,20 +6,37 @@
 # Copyright 2016 Markus Zoeller
 # Copyright 2016 Steven Hardy
 
+import argparse
 import datetime
 import logging
 import os
+import time
 
 from launchpadlib.launchpad import Launchpad
 import lazr.restfulclient.errors
 
-# TODO(markus_z): make that an arg
-PROJECT_NAME = "nova"
 
 LOG_FORMAT = "%(asctime)s - %(levelname)s - %(funcName)s - %(message)s"
-# TODO(markus_z): make the project name an arg
-logging.basicConfig(level=logging.DEBUG, format=LOG_FORMAT)
+logging.basicConfig(level=logging.INFO, format=LOG_FORMAT)
 LOG = logging.getLogger(__name__)
+
+parser = argparse.ArgumentParser(description="Expire old bug reports.")
+parser.add_argument('project_name',
+                    help='The Launchpad project name (nova, cinder, ...).')
+parser.add_argument('--verbose', '-v',
+                    help='Enable debug logging.',
+                    action="store_true")
+parser.add_argument('--no_dry_run',
+                    help='Execute the expiration for real.',
+                    action='store_true')
+args = parser.parse_args()
+LOG.info(args)
+
+
+PROJECT_NAME = args.project_name
+if args.verbose:
+    LOG.setLevel(logging.DEBUG)
+
 
 DAYS_SINCE_CREATED = 30 * 18  # 18 months
 STILL_VALID_FLAG = "CONFIRMED FOR: %(release_name)s"  # UPPER CASE
@@ -120,12 +137,14 @@ If you can reproduce it, please:
        'valid_release_name': SUPPORTED_RELEASE_NAMES[0]}
 
     bug_task = bug_report.bug_task
-    # bug_task.bug.newMessage(subject=subject, content=comment)
+    if args.no_dry_run:
+        bug_task.bug.newMessage(subject=subject, content=comment)
     bug_task.status = "Won't Fix"
     bug_task.assignee = None
     bug_task.importance = "Undecided"
     try:
-        # bug_task.lp_save()
+        if args.no_dry_run:
+            bug_task.lp_save()
         LOG.debug("expired bug report %s" % bug_report)
         LOG.debug("message: %s" % comment)
     except lazr.restfulclient.errors.ServerError as e:
@@ -135,6 +154,11 @@ If you can reproduce it, please:
 
 
 def main():
+    if args.no_dry_run:
+        LOG.info("This is not a drill! Bug reports will be closed for real!")
+        time.sleep(4)  # in case you wanna ctrl-c this
+    else:
+        LOG.info("This is just a dry-run, nothing will happen.")
     fill_supported_release_names()
     expired_reports = get_expired_reports()
     LOG.info("starting expiration...")
