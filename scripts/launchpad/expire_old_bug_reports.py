@@ -146,16 +146,14 @@ If you can reproduce it, please:
        'valid_release_name': SUPPORTED_RELEASE_NAMES[0]}
 
     bug_task = bug_report.bug_task
-    if args.no_dry_run:
-        bug_task.bug.newMessage(subject=subject, content=comment)
     bug_task.status = "Won't Fix"
     bug_task.assignee = None
     bug_task.importance = "Undecided"
     try:
         if args.no_dry_run:
             bug_task.lp_save()
-        LOG.debug("expired bug report %s" % bug_report)
-        LOG.debug("message: %s" % comment)
+            bug_task.bug.newMessage(subject=subject, content=comment)
+            LOG.debug("expired bug report %s" % bug_report)
     except lazr.restfulclient.errors.ServerError as e:
         LOG.error(" - TIMEOUT during save ! (%s)" % e, end='')
     except Exception as e:
