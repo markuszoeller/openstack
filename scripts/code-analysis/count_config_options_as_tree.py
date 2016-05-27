@@ -22,10 +22,15 @@
 
 import os
 import re
+import sys
 
+IGNORE_EMPTY_DIRS = True
 ALL_OPTS_COUNTER = 0
 OPTS_REGEX = r".*cfg\.[a-zA-Z]*Opt\("
 PATHS_TO_IGNORE = ["locale", "tests", "__pycache__"]
+
+if len(sys.argv) > 1 and sys.argv[1] == "--show-empty":
+    IGNORE_EMPTY_DIRS = False
 
 # traverse root directory, and list directories as dirs and files as files
 for root, dirs, files in os.walk("nova"):
@@ -46,9 +51,11 @@ for root, dirs, files in os.walk("nova"):
             matches = re.findall(OPTS_REGEX, content)
             count_opts += len(matches)
 
-    if count_opts > 0:
-        print (len(path) - 1) * '---', name, "[" + str(count_opts) + "]"
-        ALL_OPTS_COUNTER += count_opts
+    if IGNORE_EMPTY_DIRS and count_opts <= 0:
+        continue
+
+    print (len(path) - 1) * '---', name, "[" + str(count_opts) + "]"
+    ALL_OPTS_COUNTER += count_opts
 
 print("----------------------------")
 print("Number of total options: " + str(ALL_OPTS_COUNTER))
