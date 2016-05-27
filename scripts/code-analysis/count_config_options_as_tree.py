@@ -24,7 +24,7 @@ import os
 import re
 
 ALL_OPTS_COUNTER = 0
-OPTS_REGEX = r".*[\s\[]cfg\.[a-zA-Z]*Opt\("
+OPTS_REGEX = r".*cfg\.[a-zA-Z]*Opt\("
 PATHS_TO_IGNORE = ["locale", "tests", "__pycache__"]
 
 # traverse root directory, and list directories as dirs and files as files
