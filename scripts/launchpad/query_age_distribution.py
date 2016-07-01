@@ -26,17 +26,6 @@ status_dist["In Progress"] = 0
 status_dist["Fix Committed"] = 0
 
 age_dist = collections.OrderedDict()
-DIST_0_6 = "0 <= m < 6"
-DIST_6_12 = "6 <= m < 12"
-DIST_12_18 = "12 <= m < 18"
-DIST_18_24 = "18 <= m < 24"
-DIST_24_N = "24 <= m"
-age_dist[DIST_0_6] = copy.deepcopy(status_dist)
-age_dist[DIST_6_12] = copy.deepcopy(status_dist)
-age_dist[DIST_12_18] = copy.deepcopy(status_dist)
-age_dist[DIST_18_24] = copy.deepcopy(status_dist)
-age_dist[DIST_24_N] = copy.deepcopy(status_dist)
-
 
 today = datetime.datetime.today()
 for bug_task in bug_tasks:
@@ -44,18 +33,19 @@ for bug_task in bug_tasks:
     diff = today - bug_task.date_created.replace(tzinfo=None)
 
     m = diff.days / 30
-    if 0 <= m < 6:
-        age_dist[DIST_0_6][bug_task.status] += 1
-    elif 6 <= m < 12:
-        age_dist[DIST_6_12][bug_task.status] += 1
-    elif 12 <= m < 18:
-        age_dist[DIST_12_18][bug_task.status] += 1
-    elif 18 <= m < 24:
-        age_dist[DIST_18_24][bug_task.status] += 1
-    else:
-        age_dist[DIST_24_N][bug_task.status] += 1
+    if m not in age_dist:
+        age_dist[m] = copy.deepcopy(status_dist)
+    age_dist[m][bug_task.status] += 1
 
-for d in age_dist:
-    print("%s [sum:%d]" % (d, sum(age_dist[d].values())))
-    for s in age_dist[d]:
-        print("\t%s: %s" % (s, str(age_dist[d][s])))
+MAX_M = max(age_dist)
+for m in range(0, MAX_M):
+    if m not in age_dist:
+        age_dist[m] = copy.deepcopy(status_dist)
+
+for m in sorted(age_dist.keys(), reverse=True):
+    print("%02d %s" % (m, "*" * sum(age_dist[m].values())))
+
+for m in age_dist:
+    print("%s [sum:%d]" % (m, sum(age_dist[m].values())))
+    for s in age_dist[m]:
+        print("\t%s: %s" % (s, str(age_dist[m][s])))
