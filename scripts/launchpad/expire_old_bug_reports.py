@@ -22,12 +22,16 @@ logging.basicConfig(level=logging.INFO, format=LOG_FORMAT)
 LOG = logging.getLogger(__name__)
 
 parser = argparse.ArgumentParser(description="Expire old bug reports.")
-parser.add_argument('project_name',
+parser.add_argument('-p',
+                    '--project-name',
+                    required=True,
+                    dest='project_name',
                     help='The Launchpad project name (nova, cinder, ...).')
 parser.add_argument('--verbose', '-v',
                     help='Enable debug logging.',
                     action="store_true")
-parser.add_argument('--no_dry_run',
+parser.add_argument('--no-dry-run',
+                    dest='no_dry_run',
                     help='Execute the expiration for real.',
                     action='store_true')
 args = parser.parse_args()

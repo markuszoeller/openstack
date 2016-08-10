@@ -1,17 +1,31 @@
 #!/usr/bin/env python
 
-# Displays all Launchpad bugs for OpenStack/Nova which block
+# Displays all Launchpad bugs for a LP project which block
 # the creation of the release candidate.
 #
 # Copyright 2015 Markus Zoeller
 
-import os
+import argparse
 
 import common
 
-PROJECT_NAME = "nova"
+parser = argparse.ArgumentParser()
+parser.add_argument('-p',
+                    '--project-name',
+                    required=True,
+                    dest='project_name',
+                    help='The LP project name.')
+parser.add_argument('-r',
+                    '--release-name',
+                    required=True,
+                    dest='release_name',
+                    help='The name of the release.')
 
-RELEASE="mitaka"
+args = parser.parse_args()
+
+PROJECT_NAME = args.project_name
+
+RELEASE = args.release_name
 
 client = common.get_project_client(PROJECT_NAME)
 
@@ -29,7 +43,8 @@ print "================================================="
 print "Reviews"
 print "================================================="
 link = "https://review.openstack.org/#/q/"
-link += "status:open+project:openstack/nova"
+link += "status:open+project:openstack/"
+link += PROJECT_NAME
 link += "+(nil"
 for bug_task in bug_tasks:
     link += "+OR+message:\"#" + str(bug_task.bug.id) + "\""

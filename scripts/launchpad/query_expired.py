@@ -5,15 +5,21 @@
 #
 # Copyright 2016 Markus Zoeller
 
+import argparse
 import datetime
-import json
-import os
-import requests
-import sys
 
 import common
 
-PROJECT_NAME = "nova"
+parser = argparse.ArgumentParser()
+parser.add_argument('-p',
+                    '--project-name',
+                    required=True,
+                    dest='project_name',
+                    help='The LP project name.')
+
+args = parser.parse_args()
+
+PROJECT_NAME = args.project_name
 DAYS_SINCE_CREATED = 30 * 18  # 18 months
 STILL_VALID_FLAG = "CONFIRMED FOR: %(release_name)s"  # UPPER CASE
 

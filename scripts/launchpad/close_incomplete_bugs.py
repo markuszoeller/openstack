@@ -20,7 +20,10 @@ logging.basicConfig(format=LOG_FORMAT)
 LOG = logging.getLogger(__name__)
 
 parser = argparse.ArgumentParser(description="Close incomplete bug reports.")
-parser.add_argument('project_name',
+parser.add_argument('-p',
+                    '--project-name',
+                    required=True,
+                    dest='project_name',
                     help='The Launchpad project name (nova, cinder, ...).')
 parser.add_argument('--bugs', type=int, nargs='+',
                     help="The numbers of the bug reports to close.")

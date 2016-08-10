@@ -5,9 +5,21 @@
 #
 # Copyright 2016 Markus Zoeller
 
+import argparse
 import os
 import datetime
 from launchpadlib.launchpad import Launchpad
+
+parser = argparse.ArgumentParser()
+parser.add_argument('-p',
+                    '--project-name',
+                    required=True,
+                    dest='project_name',
+                    help='The LP project name.')
+
+args = parser.parse_args()
+
+PROJECT_NAME = args.project_name
 
 RECENT_ACTIVITY_IN_DAYS = 14
 
@@ -28,7 +40,7 @@ launchpad = Launchpad.login_with('just testing',
                                  'production',
                                  cachedir)
 
-project = launchpad.projects["nova"]
+project = launchpad.projects[PROJECT_NAME]
 
 ALL_STATES = ["New", "Incomplete", "Confirmed", "Won't Fix", "Opinion",
               "Invalid", "Fix Released"]

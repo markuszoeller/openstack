@@ -5,11 +5,20 @@
 #
 # Copyright 2015 Markus Zoeller
 
-import os
+import argparse
 
 import common
 
-PROJECT_NAME = "nova"
+parser = argparse.ArgumentParser()
+parser.add_argument('-p',
+                    '--project-name',
+                    required=True,
+                    dest='project_name',
+                    help='The LP project name.')
+
+args = parser.parse_args()
+
+PROJECT_NAME = args.project_name
 
 client = common.get_project_client(PROJECT_NAME)
 

@@ -4,6 +4,7 @@
 # cleanup tasks of the bug management.
 #
 
+import argparse
 import datetime
 import json
 import os
@@ -13,8 +14,18 @@ import logging
 from jinja2 import Environment, FileSystemLoader
 from launchpadlib.launchpad import Launchpad
 
+parser = argparse.ArgumentParser()
+parser.add_argument('-p',
+                    '--project-name',
+                    required=True,
+                    dest='project_name',
+                    help='The LP project name.')
+
+args = parser.parse_args()
+
+PROJECT_NAME = args.project_name
+
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
-PROJECT_NAME = "nova"
 DAYS_SINCE_INCOMPLETE = 30
 DAYS_SINCE_IN_PROGRESS = 14
 DAYS_SINCE_RECENT = 10

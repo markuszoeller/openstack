@@ -5,15 +5,23 @@
 #
 # Copyright 2016 Markus Zoeller
 
+import argparse
 import datetime
-import json
-import os
-import requests
 import logging
 
 import common
 
-PROJECT_NAME = "nova"
+parser = argparse.ArgumentParser()
+parser.add_argument('-p',
+                    '--project-name',
+                    required=True,
+                    dest='project_name',
+                    help='The LP project name.')
+
+args = parser.parse_args()
+
+PROJECT_NAME = args.project_name
+
 LOG = logging.getLogger(__name__)
 
 

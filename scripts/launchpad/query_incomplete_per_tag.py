@@ -1,26 +1,31 @@
 #!/usr/bin/env python
 
-# Displays all Launchpad bugs for OpenStack/Nova which are potentially stale
+# Displays all Launchpad bugs for a LP project which are potentially stale
 # and in the "incomplete" state.
-#
-# ARGS (positional): The tag names to filter by. If not provided, all tags
-#                    will be included.
-# Example 1: python query_incomplete_per_tag.py api libvirt
-# Example 2: python query_incomplete_per_tag.py
 #
 # Copyright 2016 Markus Zoeller
 
+import argparse
 import datetime
-import json
-import os
-import requests
-import sys
 
 import common
 
-PROJECT_NAME = "nova"
+parser = argparse.ArgumentParser()
+parser.add_argument('-p',
+                    '--project-name',
+                    required=True,
+                    dest='project_name',
+                    help='The LP project name.')
+parser.add_argument('-t',
+                    '--tag-names',
+                    dest='tags',
+                    nargs='*',
+                    help='The tags to filter')
 
-TAGS = None if len(sys.argv) <= 1 else sys.argv[1:]
+args = parser.parse_args()
+
+PROJECT_NAME = args.project_name
+TAGS = args.tags
 
 client = common.get_project_client(PROJECT_NAME)
 bug_tasks = client.searchTasks(status=["Incomplete"],
