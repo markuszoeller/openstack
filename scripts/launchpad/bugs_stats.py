@@ -15,17 +15,19 @@ from launchpadlib.launchpad import Launchpad
 
 RECENT_ACTIVITY_IN_DAYS = 14
 
-LOG_FORMAT="%(asctime)s - %(levelname)s - %(funcName)s - %(message)s"
-logging.basicConfig(level=logging.INFO, format=LOG_FORMAT)
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_NAME = "nova"
 
 ALL_STATES = ["Incomplete", "Confirmed", "Won't Fix", "Opinion",
               "Invalid", "Fix Released"]
 
+LOG_FORMAT = "%(asctime)s - %(levelname)s - %(funcName)s - %(message)s"
+formatter = logging.Formatter(LOG_FORMAT)
+stream_handler = logging.StreamHandler()
+stream_handler.setFormatter(formatter)
 LOG = logging.getLogger(__name__)
-logging.getLogger("requests").setLevel(logging.WARNING)
-logging.getLogger("urllib3").setLevel(logging.WARNING)
+LOG.addHandler(stream_handler)
+LOG.setLevel(logging.INFO)
 
 
 class StatSummary(object):

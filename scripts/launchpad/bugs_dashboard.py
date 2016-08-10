@@ -13,8 +13,6 @@ import logging
 from jinja2 import Environment, FileSystemLoader
 from launchpadlib.launchpad import Launchpad
 
-LOG_FORMAT="%(asctime)s - %(levelname)s - %(funcName)s - %(message)s"
-logging.basicConfig(level=logging.INFO, format=LOG_FORMAT)
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_NAME = "nova"
 DAYS_SINCE_INCOMPLETE = 30
@@ -28,9 +26,13 @@ STILL_VALID_FLAG = "CONFIRMED FOR: %(release_name)s"  # UPPER CASE
 
 SUPPORTED_RELEASE_NAMES = []
 
+LOG_FORMAT = "%(asctime)s - %(levelname)s - %(funcName)s - %(message)s"
+formatter = logging.Formatter(LOG_FORMAT)
+stream_handler = logging.StreamHandler()
+stream_handler.setFormatter(formatter)
 LOG = logging.getLogger(__name__)
-logging.getLogger("requests").setLevel(logging.WARNING)
-logging.getLogger("urllib3").setLevel(logging.WARNING)
+LOG.addHandler(stream_handler)
+LOG.setLevel(logging.INFO)
 
 
 class BugReport(object):
