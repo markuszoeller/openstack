@@ -150,7 +150,7 @@ If you can reproduce it, please:
        'valid_release_name': SUPPORTED_RELEASE_NAMES[0]}
 
     bug_task = bug_report.bug_task
-    bug_task.status = "Won't Fix"
+    bug_task.status = "Expired"
     bug_task.assignee = None
     bug_task.importance = "Undecided"
     try:
