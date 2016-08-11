@@ -115,7 +115,7 @@ def get_recent_actions():
             a.person != bug_task.owner
     
     def is_trackable_status_change(a):
-        return a.whatchanged == "nova: status" and \
+        return a.whatchanged == PROJECT_NAME + ": status" and \
                a.newvalue in ["Incomplete", "Confirmed", "Won't Fix",
                               "Opinion", "Invalid", "Fix Released"]
     
