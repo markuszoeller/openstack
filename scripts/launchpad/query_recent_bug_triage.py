@@ -8,7 +8,7 @@
 import argparse
 import os
 import datetime
-from launchpadlib.launchpad import Launchpad
+import common
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-p',
@@ -25,22 +25,7 @@ RECENT_ACTIVITY_IN_DAYS = 14
 
 start = datetime.datetime.now()
 
-cachedir = os.path.expanduser("~/.launchpadlib/cache/")
-if not os.path.exists(cachedir):
-    os.makedirs(cachedir, 0700)
-
-# see "Authenticated access for website integration" 
-# at https://help.launchpad.net/API/launchpadlib 
-# from launchpadlib.credentials import Credentials
-# credentials = Credentials("my website")
-# request_token_info = credentials.get_request_token(web_root="production")
-
-
-launchpad = Launchpad.login_with('just testing',
-                                 'production',
-                                 cachedir)
-
-project = launchpad.projects[PROJECT_NAME]
+project = common.get_project_client(PROJECT_NAME)
 
 ALL_STATES = ["New", "Incomplete", "Confirmed", "Won't Fix", "Opinion",
               "Invalid", "Fix Released"]
