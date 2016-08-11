@@ -110,7 +110,7 @@ def get_summary(person):
 def is_created(bug_task, a):
     return (a.whatchanged =="bug" and a.message == "added bug" and \
             bug_task.date_created == bug_task.bug.date_created) or \
-            a.whatchanged == "bug task added" and a.newvalue == "nova"
+            a.whatchanged == "bug task added" and a.newvalue == PROJECT_NAME
 
 
 def is_rejected(a):
@@ -122,7 +122,7 @@ def is_new_confirmed(a):
 
 
 def is_trackable_status_change(a):
-    return a.whatchanged == "nova: status" and \
+    return a.whatchanged == PROJECT_NAME + ": status" and \
            a.newvalue in ["Incomplete", "Confirmed", "Won't Fix", "Opinion",
                           "Invalid", "Fix Released"]
 
