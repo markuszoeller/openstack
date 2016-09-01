@@ -2,23 +2,41 @@
 Live migration with Ubuntu 1404 and Virtualbox
 ==============================================
 
-Quickstart::
+Quickstart
+==========
 
-    [user@host]$ cd vagrant/live-migration-U1404-VB  # this folder here
-    [user@host]$ # Adding the box needs to be done only once
+Add the *Vagrant* box we will use for the VMs. That needs to be done only once::
+
     [user@host]$ vagrant box add ubuntu-trusty https://cloud-images.ubuntu.com/vagrant/trusty/current/trusty-server-cloudimg-i386-vagrant-disk1.box
-    [user@host]$ vagrant up        # start the VMs and wait until finished
-    [user@host]$ vagrant status    # check that all are ready
+
+Start the VMs and wait until they are finished::
+
+    [user@host]$ vagrant up
+
+Check their status::
+
+    [user@host]$ vagrant status
     Current machine states:
 
     controller                running (virtualbox)
     compute1                  running (virtualbox)
     compute2                  running (virtualbox)
-    [user@host]$ vagrant ssh controller      # log into the controller node
-    vagrant@controller:~$ sudo su - stack    # The "stack" user should use Devstack
+
+Log into the controller node::
+
+    [user@host]$ vagrant ssh controller
+
+Switch the user which should be used to interact with *Devstack*::
+
+    vagrant@controller:~$ sudo su - stack
+
+Change to the *Devstack* folder and start it::
+
     stack@controller:~$ cd /opt/stack/devstack
-    stack@controller:~$ make stack           # Trigger Devstack installation
-    stack@controller:~$ # devstack magic starts here, wait for:
+    stack@controller:~$ make stack
+
+Wait for *Devstack* to finish. You should see something like this::
+
     This is your host IP address: 192.168.56.150
     This is your host IPv6 address: ::1
     Horizon is now available at http://192.168.56.150/dashboard
@@ -26,6 +44,6 @@ Quickstart::
     The default users are: admin and demo
     The password: openstack
 
-Log into the compute nodes as well and trigger Devstack like above.
+Log into the compute nodes as well and start *Devstack* like above.
 At the end you will see all services registered in the Horizon dashboard
-at http://192.168.56.150/dashboard
+at http://192.168.56.150/dashboard/admin/info/?tab=system_info__nova_services
