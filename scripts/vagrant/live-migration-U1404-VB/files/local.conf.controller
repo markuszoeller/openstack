@@ -1,0 +1,44 @@
+[[local|localrc]]
+# ------------------------------
+# Topology
+# ------------------------------
+MULTI_HOST=1
+HOST_IP=192.168.56.150
+
+# ------------------------------
+# Authentication
+# ------------------------------
+ADMIN_PASSWORD=openstack
+MYSQL_PASSWORD=$ADMIN_PASSWORD
+RABBIT_PASSWORD=$ADMIN_PASSWORD
+SERVICE_PASSWORD=$ADMIN_PASSWORD
+
+# ------------------------------
+# Logging
+# ------------------------------
+VERBOSE=True
+SYSLOG=True
+SYSLOG_HOST=$HOST_IP
+
+
+# ------------------------------
+# Services
+# ------------------------------
+# (markus_z) I don't care about heat
+disable_service heat
+
+# (markus_z) I care about this feature
+enable_service n-sproxy
+
+# Let this be a controller node only
+disable_service n-cpu
+
+
+# ------------------------------
+# Nova
+# ------------------------------
+# serial console should be the only console
+NOVA_VNC_ENABLED=False
+
+[[post-config|$NOVA_CONF]]
+

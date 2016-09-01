@@ -1,0 +1,48 @@
+[[local|localrc]]
+# ------------------------------
+# Topology
+# ------------------------------
+MULTI_HOST=1
+HOST_IP=192.168.56.152
+SERVICE_HOST=192.168.56.150
+MYSQL_HOST=$SERVICE_HOST
+RABBIT_HOST=$SERVICE_HOST
+GLANCE_HOSTPORT=$SERVICE_HOST:9292
+
+# ------------------------------
+# Authentication
+# ------------------------------
+ADMIN_PASSWORD=openstack
+MYSQL_PASSWORD=$ADMIN_PASSWORD
+RABBIT_PASSWORD=$ADMIN_PASSWORD
+SERVICE_PASSWORD=$ADMIN_PASSWORD
+
+# ------------------------------
+# Logging
+# ------------------------------
+VERBOSE=True
+SYSLOG=True
+SYSLOG_HOST=$SERVICE_HOST
+
+
+
+# ------------------------------
+# Services
+# ------------------------------
+ENABLED_SERVICES=n-cpu,n-api-meta,q-agt
+
+# ------------------------------
+# Nova
+# ------------------------------
+[[post-config|$NOVA_CONF]]
+[serial_console]
+enabled=True
+base_url=ws://$SERVICE_HOST:6083/
+proxyclient_address=$HOST_IP
+
+[vnc]
+# serial console should be the only console
+enabled=False
+
+[libvirt]
+live_migration_uri = qemu+tcp://stack@%s/system

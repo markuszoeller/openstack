@@ -1,0 +1,62 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+
+Vagrant.configure(2) do |config|
+  # For a complete reference, please see the online documentation at
+  # https://docs.vagrantup.com.
+
+  # TODO extract methods for these machines (name, IP, cpu, memory)
+
+  # ===== CONTROLLER NODE ====================================================
+  config.vm.define "controller" do |ctrl|
+    ctrl.vm.box = "ubuntu-trusty"
+    ctrl.vm.hostname = "controller"
+    ctrl.vm.network :private_network, ip: "192.168.56.150"
+
+    ctrl.vm.provider :virtualbox do |v|
+      v.memory = "4096"
+      v.cpus = "4"
+    end
+
+    # FIXME the provisioner.sh file expects the file there ->
+    ctrl.vm.provision "file", source: "files/local.conf.controller", destination: "/home/vagrant/local.conf"
+    ctrl.vm.provision "shell", path: "provisioner.sh"
+    # FIXME <- the copy of the local.conf must be simpler
+  end
+
+  # ===== COMPUTE NODE 1 =====================================================
+  config.vm.define "compute1" do |cmp1|
+    cmp1.vm.box = "ubuntu-trusty"
+    cmp1.vm.hostname = "compute1"
+    cmp1.vm.network :private_network, ip: "192.168.56.151"
+
+    cmp1.vm.provider :virtualbox do |v|
+      v.memory = "4096"
+      v.cpus = "4"
+    end
+
+    # FIXME the provisioner.sh file expects the file there ->
+    cmp1.vm.provision "file", source: "files/local.conf.compute1", destination: "/home/vagrant/local.conf"
+    cmp1.vm.provision "shell", path: "provisioner.sh"
+    # FIXME <- the copy of the local.conf must be simpler
+  end
+
+  # ===== COMPUTE NODE 2 =====================================================
+  config.vm.define "compute2" do |cmp2|
+    cmp2.vm.box = "ubuntu-trusty"
+    cmp2.vm.hostname = "compute2"
+    cmp2.vm.network :private_network, ip: "192.168.56.152"
+
+    cmp2.vm.provider :virtualbox do |v|
+      v.memory = "4096"
+      v.cpus = "4"
+    end
+
+    # FIXME the provisioner.sh file expects the file there ->
+    cmp2.vm.provision "file", source: "files/local.conf.compute2", destination: "/home/vagrant/local.conf"
+    cmp2.vm.provision "shell", path: "provisioner.sh"
+    # FIXME <- the copy of the local.conf must be simpler
+  end
+
+end
