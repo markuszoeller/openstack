@@ -51,12 +51,14 @@ fi
 # a hypervisor as it doesn't serve with compute node capability. That's why we
 # ask for the existence of the libvirt directory here.
 if [ -d "/etc/libvirt/" ]; then
+    echo "Configuring live-migration via TCP..."
     sed -i '/^\#listen_tls/c\listen_tls = 0' /etc/libvirt/libvirtd.conf
     sed -i '/^\#listen_tcp/c\listen_tcp = 1' /etc/libvirt/libvirtd.conf
     sed -i '/^\#auth_tcp/c\auth_tcp = "none"' /etc/libvirt/libvirtd.conf
     sed -i '/^libvirtd_opts=/c\libvirtd_opts="-d -l"' /etc/default/libvirt-bin # the old (deprecated) way 
     sed -i '/^env libvirtd_opts=/c\env libvirtd_opts="-d -l"' /etc/init/libvirt-bin.conf # the new way 
     service libvirt-bin restart &>/dev/null
+    echo "The live-migration via TCP is configured."
 fi
 
 # The live-migration happens with host name resolution, that's why we
@@ -67,4 +69,17 @@ if [ -z "$known_hosts" ] ; then
     echo "192.168.56.150 controller" >> /etc/hosts
     echo "192.168.56.151 compute1" >> /etc/hosts
     echo "192.168.56.152 compute2" >> /etc/hosts
+fi
+
+# ===============
+# Add a swap file
+# ===============
+SWAPFILE_SIZE_MB=8000
+has_swap=`grep "swapfile" /etc/fstab`
+if [ -z "$has_swap" ]; then
+    fallocate -l ${SWAPFILE_SIZE_MB}M /swapfile
+    chmod 600 /swapfile
+    mkswap /swapfile
+    swapon /swapfile
+    echo '/swapfile none swap defaults 0 0' >> /etc/fstab
 fi

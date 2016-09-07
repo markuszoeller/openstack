@@ -17,9 +17,13 @@ SERVICE_PASSWORD=$ADMIN_PASSWORD
 # Logging
 # ------------------------------
 VERBOSE=True
-SYSLOG=True
-SYSLOG_HOST=$HOST_IP
+LOGDAYS=1
+LOG_COLOR=False
 
+# ------------------------------
+# Upgrades
+# ------------------------------
+PIP_UPGRADE=True
 
 # ------------------------------
 # Services
@@ -41,4 +45,16 @@ disable_service n-cpu
 NOVA_VNC_ENABLED=False
 
 [[post-config|$NOVA_CONF]]
+
+
+# ------------------------------
+# Tempest
+# ------------------------------
+[[post-extra|\$TEMPEST_CONFIG]]
+# to enable live-migration tests
+[compute]
+min_compute_nodes = 2
+[compute-feature-enabled]
+block_migration_for_live_migration = True
+live_migration = True
 

@@ -3,7 +3,7 @@
 
 def define_node(config, node_name, ip_address, cpu, memory)
   config.vm.define node_name do |node|
-    node.vm.box = "ubuntu-trusty"
+    node.vm.box = "ubuntu-trusty64"
     node.vm.hostname = node_name
     node.vm.network :private_network, ip: ip_address
 
@@ -22,6 +22,6 @@ end
 
 Vagrant.configure(2) do |config|
   define_node(config, "controller", "192.168.56.150", "4", "4096")
-  define_node(config, "compute1", "192.168.56.151", "4", "4096")
-  define_node(config, "compute2", "192.168.56.152", "4", "4096")
+  define_node(config, "compute1", "192.168.56.151", "2", "2048")
+  define_node(config, "compute2", "192.168.56.152", "2", "2048")
 end

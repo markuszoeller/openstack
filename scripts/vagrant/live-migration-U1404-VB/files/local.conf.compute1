@@ -9,7 +9,6 @@ MYSQL_HOST=$SERVICE_HOST
 RABBIT_HOST=$SERVICE_HOST
 GLANCE_HOSTPORT=$SERVICE_HOST:9292
 
-
 # ------------------------------
 # Authentication
 # ------------------------------
@@ -22,9 +21,13 @@ SERVICE_PASSWORD=$ADMIN_PASSWORD
 # Logging
 # ------------------------------
 VERBOSE=True
-SYSLOG=True
-SYSLOG_HOST=$SERVICE_HOST
+LOGDAYS=1
+LOG_COLOR=False
 
+# ------------------------------
+# Upgrades
+# ------------------------------
+PIP_UPGRADE=True
 
 # ------------------------------
 # Services
@@ -45,4 +48,5 @@ proxyclient_address=$HOST_IP
 enabled=False
 
 [libvirt]
+# Let's use TCP for migration. I don't care about encryption here.
 live_migration_uri = qemu+tcp://stack@%s/system
