@@ -43,13 +43,16 @@ if [ ! -d "$STACK_DIR" ]; then
     # don't execute stack yet, just prepare everything for it
 fi
 
+# ===============
+# Install libvirt
+# ===============
+# We use the default Nova driver 'LibvirtDriver' and need to configure
+# libvirt for that (see below).
+apt-get -qq install -y libvirt-bin &>/dev/null
 
 # ====================================
 # Configure (unsecured) live migration
 # ====================================
-# This provisioner is used for the controller node too. That node doesn't have
-# a hypervisor as it doesn't serve with compute node capability. That's why we
-# ask for the existence of the libvirt directory here.
 if [ -d "/etc/libvirt/" ]; then
     echo "Configuring live-migration via TCP..."
     sed -i '/^\#listen_tls/c\listen_tls = 0' /etc/libvirt/libvirtd.conf
@@ -70,6 +73,11 @@ if [ -z "$known_hosts" ] ; then
     echo "192.168.56.151 compute1" >> /etc/hosts
     echo "192.168.56.152 compute2" >> /etc/hosts
 fi
+
+# Check if there is remote libvirt access
+virsh -c qemu+tcp://stack@controller/system nodeinfo
+virsh -c qemu+tcp://stack@compute1/system nodeinfo
+virsh -c qemu+tcp://stack@compute2/system nodeinfo
 
 # ===============
 # Add a swap file
