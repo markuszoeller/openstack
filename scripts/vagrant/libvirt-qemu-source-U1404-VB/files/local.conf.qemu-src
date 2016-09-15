@@ -1,0 +1,55 @@
+[[local|localrc]]
+# ------------------------------
+# Topology
+# ------------------------------
+HOST_IP=192.168.67.170
+
+# ------------------------------
+# Authentication
+# ------------------------------
+ADMIN_PASSWORD=openstack
+MYSQL_PASSWORD=$ADMIN_PASSWORD
+RABBIT_PASSWORD=$ADMIN_PASSWORD
+SERVICE_PASSWORD=$ADMIN_PASSWORD
+
+# ------------------------------
+# Logging
+# ------------------------------
+VERBOSE=True
+LOGDAYS=1
+LOG_COLOR=False
+
+# ------------------------------
+# Upgrades
+# ------------------------------
+PIP_UPGRADE=True
+
+
+
+# ------------------------------
+# Services
+# ------------------------------
+# (markus_z) I don't care about heat
+disable_service heat
+
+# tempest is also not needed here
+disable_service tempest
+
+# use the proxy for serial console instead of VNC
+enable_service n-sproxy
+disable_service n-novnc
+
+
+# ------------------------------
+# Nova
+# ------------------------------
+[[post-config|$NOVA_CONF]]
+[serial_console]
+enabled=True
+base_url=ws://$HOST_IP:6083/
+proxyclient_address=$HOST_IP
+ 
+[vnc]
+# serial console should be the only console
+enabled=False
+

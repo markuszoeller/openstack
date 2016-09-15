@@ -1,0 +1,26 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+def define_node(config, node_name, ip_address, cpu, memory)
+  config.vm.define node_name do |node|
+    node.vm.box = "ubuntu-trusty64"
+    node.vm.hostname = node_name
+    node.vm.network :private_network, ip: ip_address
+    node.vm.network :forwarded_port, guest: 22, host: 2200
+
+    node.vm.provider :virtualbox do |v|
+      v.cpus = cpu
+      v.memory = memory
+    end
+
+    # FIXME the provisioner.sh file expects the file there ->
+    node.vm.provision "file", source: "files/local.conf." + node_name,
+                              destination: "/home/vagrant/local.conf"
+    node.vm.provision "shell", path: "provisioner.sh"
+    # FIXME <- the copy of the local.conf must be simpler
+  end
+end
+
+Vagrant.configure(2) do |config|
+  define_node(config, "qemu-src", "192.168.67.170", "4", "8192")
+end
