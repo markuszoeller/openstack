@@ -6,7 +6,7 @@ def define_node(config, node_name, ip_address, cpu, memory)
     node.vm.box = "ubuntu-trusty64"
     node.vm.hostname = node_name
     node.vm.network :private_network, ip: ip_address
-    node.vm.network :forwarded_port, guest: 22, host: 2200
+    node.vm.network :forwarded_port, guest: 22, host: 2206
 
     node.vm.provider :virtualbox do |v|
       v.cpus = cpu
@@ -22,5 +22,5 @@ def define_node(config, node_name, ip_address, cpu, memory)
 end
 
 Vagrant.configure(2) do |config|
-  define_node(config, "qemu-src", "192.168.67.170", "4", "8192")
+  define_node(config, "qemu-src", "192.168.67.180", "4", "4096")
 end

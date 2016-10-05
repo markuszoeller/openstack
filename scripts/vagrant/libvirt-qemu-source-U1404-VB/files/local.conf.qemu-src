@@ -2,7 +2,8 @@
 # ------------------------------
 # Topology
 # ------------------------------
-HOST_IP=192.168.67.170
+HOST_IP=192.168.67.180
+
 
 # ------------------------------
 # Authentication
@@ -12,6 +13,7 @@ MYSQL_PASSWORD=$ADMIN_PASSWORD
 RABBIT_PASSWORD=$ADMIN_PASSWORD
 SERVICE_PASSWORD=$ADMIN_PASSWORD
 
+
 # ------------------------------
 # Logging
 # ------------------------------
@@ -19,11 +21,11 @@ VERBOSE=True
 LOGDAYS=1
 LOG_COLOR=False
 
+
 # ------------------------------
 # Upgrades
 # ------------------------------
 PIP_UPGRADE=True
-
 
 
 # ------------------------------
