@@ -22,5 +22,6 @@ def define_node(config, node_name, ip_address, cpu, memory)
 end
 
 Vagrant.configure(2) do |config|
+  config.ssh.insert_key = false
   define_node(config, "qemu-src", "192.168.67.180", "4", "4096")
 end

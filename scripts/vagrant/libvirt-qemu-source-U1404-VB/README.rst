@@ -2,15 +2,9 @@
 Build Qemu and Libvirt from source
 ==================================
 
-WIP
-===
-
-.. warning:: I still need to double-check that this at least runs without error.
-
-.. warning:: Libvirt and qemu versions are also hardcoded right now.
-
-.. warning:: The `*.deb` files won't be created with `checkinstall`
-
+*Abstract:* Build and install Libvirt and Qemu from source. A version can be
+specified. As the sources are from the git repos, the version can be anything
+which can be checked out, for example a tag / branch / commit.
 
 Quickstart
 ==========
@@ -27,14 +21,24 @@ Log into the node::
 
     [user@host]$ vagrant ssh
 
+Build and install newer versions of libvirt and qemu with::
+
+    vagrant@qemu-src:~$ cd ~
+    vagrant@qemu-src:~$ cp /vagrant/files/build.sh .
+    vagrant@qemu-src:~$ ./build.sh --qemu-version v2.7.0 --libvirt-version v1.3.3
+
 Switch the user which should be used to interact with *Devstack*::
 
-    vagrant@controller:~$ sudo su - stack
+    vagrant@qemu-src:~$ sudo su - stack
+
+Apply the *Devstack* patch which prevents the reinstallation of libvirt/qemu::
+
+    git apply /vagrant/files/devstack-libvirt-qemu.patch
 
 Change to the *Devstack* folder and start it::
 
-    stack@controller:~$ cd /opt/stack/devstack
-    stack@controller:~$ make stack
+    stack@qemu-src:~$ cd /opt/stack/devstack
+    stack@qemu-src:~$ make stack
 
 Wait for *Devstack* to finish. You should see something like this::
 
@@ -45,3 +49,16 @@ Wait for *Devstack* to finish. You should see something like this::
     The default users are: admin and demo
     The password: openstack
 
+In case the `virtlogd` feature is not yet merged in upstream Nova code,
+use the script to download the patches and apply them::
+
+    stack@qemu-src:~$ cd /opt/stack/nova
+    stack@qemu-src:~$ cp /vagrant/files/nova-virtlogd-patches.sh .
+    stack@qemu-src:~$ ./nova-virtlogd-patches.sh
+
+After applying this patch, you need to restart the `n-cpu` service::
+
+    stack@qemu-src:~$ screen -x
+
+.. note:: In case you get the "Cannot open your terminal" error message
+          you can use `script /dev/null` and then `screen -x`.
