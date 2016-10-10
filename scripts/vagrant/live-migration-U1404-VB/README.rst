@@ -22,6 +22,10 @@ Check their status::
     compute1                  running (virtualbox)
     compute2                  running (virtualbox)
 
+Check (optionally) if the remote libvirt connection is correctly done::
+
+    [user@host]$ ./afterburner.sh
+
 Log into the controller node::
 
     [user@host]$ vagrant ssh controller

@@ -74,10 +74,6 @@ if [ -z "$known_hosts" ] ; then
     echo "192.168.56.152 compute2" >> /etc/hosts
 fi
 
-# Check if there is remote libvirt access
-virsh -c qemu+tcp://stack@controller/system nodeinfo
-virsh -c qemu+tcp://stack@compute1/system nodeinfo
-virsh -c qemu+tcp://stack@compute2/system nodeinfo
 
 # ===============
 # Add a swap file

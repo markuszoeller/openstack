@@ -50,7 +50,7 @@ NOVA_VNC_ENABLED=False
 # ------------------------------
 # Tempest
 # ------------------------------
-[[post-extra|\$TEMPEST_CONFIG]]
+[[post-extra|$TEMPEST_CONFIG]]
 # to enable live-migration tests
 [compute]
 min_compute_nodes = 2
