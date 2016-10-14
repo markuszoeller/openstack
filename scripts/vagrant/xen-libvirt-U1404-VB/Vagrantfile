@@ -1,0 +1,37 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+def define_node(config, node_name, ip_address, cpu, memory)
+  config.vm.define node_name do |node|
+    node.vm.box = "ubuntu-trusty64"
+    node.vm.hostname = node_name
+    node.vm.network :private_network, ip: ip_address
+    node.vm.network :forwarded_port, guest: 22, host: 2207
+
+    node.vm.provider :virtualbox do |v|
+      v.cpus = cpu
+      v.memory = memory
+    end
+
+    # References how to setup xen:
+    # https://umasharma17.wordpress.com/2015/01/06/ubuntu-14-04-with-xen-and-virtual-machine-manager/comment-page-1/
+    # https://help.ubuntu.com/community/Xen
+
+    # FIXME the provisioner.sh file expects the file there ->
+    node.vm.provision "file", source: "files/local.conf." + node_name,
+                              destination: "/home/vagrant/local.conf"
+    node.vm.provision "shell", path: "provisioner.sh"
+    # FIXME <- the copy of the local.conf must be simpler
+
+    # http://stackoverflow.com/questions/21101869/programatically-restart-vagrant-box-after-provisioning-vagrant-1-4
+    # after installing xen-hypervisor, we need to reboot the VM:
+    # config.trigger.after :provision, :execute => "vagrant reload"
+    # Check if xen works:
+    # sudo xl info
+  end
+end
+
+Vagrant.configure(2) do |config|
+  config.ssh.insert_key = false
+  define_node(config, "xen", "192.168.67.183", "4", "4096")
+end

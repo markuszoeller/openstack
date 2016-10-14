@@ -1,0 +1,43 @@
+[[local|localrc]]
+# ------------------------------
+# Topology
+# ------------------------------
+HOST_IP=192.168.67.183
+
+
+# ------------------------------
+# Authentication
+# ------------------------------
+ADMIN_PASSWORD=openstack
+MYSQL_PASSWORD=$ADMIN_PASSWORD
+RABBIT_PASSWORD=$ADMIN_PASSWORD
+SERVICE_PASSWORD=$ADMIN_PASSWORD
+
+
+# ------------------------------
+# Logging
+# ------------------------------
+VERBOSE=True
+LOGDAYS=1
+LOG_COLOR=False
+
+
+# ------------------------------
+# Upgrades
+# ------------------------------
+PIP_UPGRADE=True
+
+
+# ------------------------------
+# Services
+# ------------------------------
+# (markus_z) I don't care about heat
+disable_service heat
+
+
+# ------------------------------
+# Nova
+# ------------------------------
+LIBVIRT_TYPE=xen
+
+# [[post-config|$NOVA_CONF]]
