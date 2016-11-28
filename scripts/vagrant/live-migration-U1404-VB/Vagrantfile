@@ -3,7 +3,7 @@
 
 def define_node(config, node_name, ip_address, cpu, memory)
   config.vm.define node_name do |node|
-    node.vm.box = "ubuntu-trusty64"
+    node.vm.box = "ubuntu/trusty64"
     node.vm.hostname = node_name
     node.vm.network :private_network, ip: ip_address
 

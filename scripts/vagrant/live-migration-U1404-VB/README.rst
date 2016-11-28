@@ -7,7 +7,7 @@ Quickstart
 
 Add the *Vagrant* box we will use for the VMs. That needs to be done only once::
 
-    [user@host]$ vagrant box add ubuntu-trusty64 https://atlas.hashicorp.com/ubuntu/boxes/trusty64/
+    [user@host]$ vagrant box add ubuntu/trusty64 https://atlas.hashicorp.com/ubuntu/boxes/trusty64/
 
 Start the VMs and wait until they are finished::
 
