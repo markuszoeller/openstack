@@ -35,9 +35,9 @@ Change to the *Devstack* folder and start it::
 
 Wait for *Devstack* to finish. You should see something like this::
 
-    This is your host IP address: 192.168.56.160
+    This is your host IP address: 192.168.67.160
     This is your host IPv6 address: ::1
-    Horizon is now available at http://192.168.56.160/dashboard
-    Keystone is serving at http://192.168.56.160/identity/
+    Horizon is now available at http://192.168.67.160/dashboard
+    Keystone is serving at http://192.168.67.160/identity/
     The default users are: admin and demo
     The password: openstack
