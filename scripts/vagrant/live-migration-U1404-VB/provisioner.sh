@@ -23,6 +23,11 @@ export LC_ALL=en_US.UTF-8
 locale-gen en_US.UTF-8 &>/dev/null
 dpkg-reconfigure locales &>/dev/null
 
+# =================
+# update the system
+# =================
+apt-get -qq update &>/dev/null
+
 # ==================
 # install the basics
 # ==================
