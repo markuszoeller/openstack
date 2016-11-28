@@ -22,5 +22,5 @@ def define_node(config, node_name, ip_address, cpu, memory)
 end
 
 Vagrant.configure(2) do |config|
-  define_node(config, "aio", "192.168.67.160", "4", "8192")
+  define_node(config, "aio", "192.168.67.160", "4", "4096")
 end
