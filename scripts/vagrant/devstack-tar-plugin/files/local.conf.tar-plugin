@@ -1,0 +1,39 @@
+[[local|localrc]]
+# ------------------------------
+# Topology
+# ------------------------------
+HOST_IP=192.168.1.163
+
+# ------------------------------
+# Authentication
+# ------------------------------
+ADMIN_PASSWORD=openstack
+MYSQL_PASSWORD=$ADMIN_PASSWORD
+RABBIT_PASSWORD=$ADMIN_PASSWORD
+SERVICE_PASSWORD=$ADMIN_PASSWORD
+
+# ------------------------------
+# Logging
+# ------------------------------
+VERBOSE=True
+LOGDAYS=1
+LOG_COLOR=False
+
+# ------------------------------
+# Upgrades
+# ------------------------------
+PIP_UPGRADE=True
+
+# ------------------------------
+# Plugins
+# ------------------------------
+enable_plugin devstack-plugin-tar-installer https://git.virtualopensystems.com/sesame/devstack-qemu-libvirt-from-tar-plugin.git
+QEMU_VERSION=2.7.0
+LIBVIRT_VERSION=2.4.0
+
+# ------------------------------
+# Services
+# ------------------------------
+# (markus_z) I don't care about heat
+disable_service heat
+
