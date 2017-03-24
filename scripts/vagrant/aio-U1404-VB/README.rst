@@ -5,10 +5,6 @@ All-in-One (aio) - Ubuntu 1404 and Virtualbox
 Quickstart
 ==========
 
-Add the *Vagrant* box we will use for the VMs. That needs to be done only once::
-
-    [user@host]$ vagrant box add ubuntu-trusty64 https://atlas.hashicorp.com/ubuntu/boxes/trusty64/
-
 Start the VM and wait until it is finished::
 
     [user@host]$ vagrant up
