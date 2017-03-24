@@ -2,6 +2,12 @@
 All-in-One (aio) - Ubuntu 1404 and Virtualbox
 =============================================
 
+.. warning:: This uses the ``stable/ocata`` branch of Devstack. This is
+   last release which works with Ubuntu 14.04. Since *Pike*, Devstack needs
+   Ubuntu 16.04 and greater. This is due to the hypervisor versions of
+   libvirt/qemu. This is since this commit:
+   https://github.com/openstack-dev/devstack/commit/ff10ac3
+
 Quickstart
 ==========
 
