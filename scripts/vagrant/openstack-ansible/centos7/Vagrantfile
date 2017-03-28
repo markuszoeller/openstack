@@ -1,0 +1,52 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure(2) do |config|
+
+  config.vm.define "deployment-node" do |deployment|
+    deployment.vm.box = "centos/7"
+    deployment.vm.network "private_network", type: "dhcp"
+    deployment.vm.hostname = "deployment-node"
+
+    deployment.vm.provider :virtualbox do |vb|
+      vb.cpus = "1"
+      vb.memory = "1024"
+    end
+
+    deployment.vm.provision "shell", path: "provisioner/common.sh"
+    deployment.vm.provision "shell", path: "provisioner/deployment.sh"
+  end
+
+  # -----------------------------------------------------------------------
+
+  config.vm.define "logging-node" do |logging|
+    logging.vm.box = "centos/7"
+    logging.vm.network "private_network", type: "dhcp"
+    logging.vm.hostname = "logging-node"
+
+    logging.vm.provider :virtualbox do |vb|
+      vb.cpus = "1"
+      vb.memory = "1024"
+    end
+
+    logging.vm.provision "shell", path: "provisioner/common.sh"
+    logging.vm.provision "shell", path: "provisioner/logging.sh"
+  end
+
+  # -----------------------------------------------------------------------
+
+  config.vm.define "infra-node" do |infra|
+    infra.vm.box = "centos/7"
+    infra.vm.network "private_network", type: "dhcp"
+    infra.vm.hostname = "infra-node"
+
+    infra.vm.provider :virtualbox do |vb|
+      vb.cpus = "4"
+      vb.memory = "4096"
+    end
+
+    infra.vm.provision "shell", path: "provisioner/common.sh"
+    infra.vm.provision "shell", path: "provisioner/infra.sh"
+  end
+
+end
