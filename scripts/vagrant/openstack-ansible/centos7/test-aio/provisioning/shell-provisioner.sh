@@ -38,3 +38,61 @@ if [ -z "$has_swap" ]; then
     swapon /swapfile
     echo '/swapfile none swap defaults 0 0' >> /etc/fstab
 fi
+
+
+# ==================
+# Upgrade the system
+# ==================
+yum -y upgrade
+
+# ==================
+# Install the basics
+# ==================
+yum install -y git
+yum install -y openssh-server
+yum install -y python-devel
+yum install -y epel-release
+yum install -y redhat-lsb
+yum install -y ntp
+yum install -y ntpdate
+yum install -y ansible
+
+# ========================
+# Install the RDO packages
+# ========================
+yum install -y https://rdoproject.org/repos/openstack-ocata/rdo-release-ocata.rpm
+
+
+# =================
+# Use a time server
+# =================
+systemctl enable ntpd
+systemctl start ntpd
+
+
+# =========================
+# Prepare openstack-ansible
+# =========================
+if [ ! -d "/opt/openstack-ansible" ]; then
+    git clone https://git.openstack.org/openstack/openstack-ansible /opt/openstack-ansible
+fi
+
+echo "===================================================================="
+echo " Everything is set up. you might want to reboot the VM"
+echo " before you continue. After the reboot and login:"
+echo " * become root: 'sudo -i' "
+echo " * change into the directory /opt/openstack-ansible"
+echo " and follow the quickstart guide at: "
+echo " https://docs.openstack.org/developer/openstack-ansible/developer-docs/quickstart-aio.html"
+echo "===================================================================="
+# ------- you might want to reboot here before you continue ------->
+
+# =====================
+# Follow the quickstart
+# =====================
+# https://docs.openstack.org/developer/openstack-ansible/developer-docs/quickstart-aio.html
+# basically:
+#   git checkout -b stable/ocata origin/stable/ocata
+#   scripts/bootstrap-ansible.sh
+#   scripts/bootstrap-aio.sh
+#   scripts/run-playbooks.sh
