@@ -10,7 +10,7 @@ Vagrant.configure(2) do |config|
 
     aio.vm.provider :virtualbox do |vb|
       vb.cpus = "4"
-      vb.memory = "4096"
+      vb.memory = "8096"
 
       disk_size = 60  # GB
       file_to_disk = './tmp/ext_disk_%sGB.vdi' % disk_size
