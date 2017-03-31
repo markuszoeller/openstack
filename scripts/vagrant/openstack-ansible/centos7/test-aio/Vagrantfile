@@ -1,0 +1,29 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure(2) do |config|
+
+  config.vm.define "aio-node" do |aio|
+    aio.vm.box = "centos/7"
+    aio.vm.network "private_network", type: "dhcp"
+    aio.vm.hostname = "aio-node"
+
+    aio.vm.provider :virtualbox do |vb|
+      vb.cpus = "4"
+      vb.memory = "4096"
+
+      disk_size = 60  # GB
+      file_to_disk = './tmp/ext_disk_%sGB.vdi' % disk_size
+      unless File.exist?(file_to_disk)
+        vb.customize ['createhd', '--filename', file_to_disk,
+                      '--size', disk_size * 1024]
+      end
+      vb.customize ['storageattach', :id, '--storagectl', 'IDE Controller',
+                    '--port', 1, '--device', 0, '--type', 'hdd',
+                    '--medium', file_to_disk]
+    end
+
+    aio.vm.provision "shell", path: "provisioning/shell-provisioner.sh"
+  end
+
+end
