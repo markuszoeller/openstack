@@ -1,12 +1,12 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-def define_node(config, node_name, ip_address, cpu, memory)
+def define_node(config, node_name, cpu, memory)
   config.vm.define node_name do |node|
     node.vm.box = "centos/7"
     node.vm.hostname = node_name
     node.vm.network :private_network, type: "dhcp"
-    node.vm.network :forwarded_port, guest: 22, host: 2258
+    node.vm.network :forwarded_port, guest: 22, host: 2238
 
     node.vm.provider :virtualbox do |v|
       v.cpus = cpu
@@ -23,5 +23,5 @@ def define_node(config, node_name, ip_address, cpu, memory)
 end
 
 Vagrant.configure(2) do |config|
-  define_node(config, "aio", "192.168.28.150", "4", "4096")
+  define_node(config, "aio", "4", "4096")
 end
